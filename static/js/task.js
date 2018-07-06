@@ -18,7 +18,6 @@ var pages = [
 	"instructions/instruct-3.html",
 	"instructions/instruct-4.html",
 	"instructions/instruct-5.html",
-	//"instructions/instruct-6.html",
 	"instructions/instruct-ready.html",
 	"stage.html",
 	"postquestionnaire.html"
@@ -32,7 +31,6 @@ var instructionPages = [ // add as a list as many pages as you like
 	"instructions/instruct-3.html",
 	"instructions/instruct-4.html",
 	"instructions/instruct-5.html",
-	//"instructions/instruct-6.html",
 	"instructions/instruct-ready.html"
 ];
 
@@ -52,97 +50,94 @@ var instructionPages = [ // add as a list as many pages as you like
 ********************/
 
 var Practice1 = function() {
+	// call + read textfile (prob needed for trial information, etc)
 	function readTextFile(file){
 		var rawFile = new XMLHttpRequest();
-		rawFile.open("GET", file, false);
-		rawFile.onreadystatechange = function ()
-		{
-			if(rawFile.readyState === 4)
-			{
-				if(rawFile.status === 200 || rawFile.status == 0)
-				{
-					allText = rawFile.responseText.split("\n");
-					//allText = rawFile.responseText.toString().split("\n");
-					//console.log(allText);
-					var arr1 = [];
-					var arr2 = [];
-					var arr3 = [];
-					var arr4 = [];
-					var arr5 = [];
-					//var arr6 = [];
-					arr6 = new Array(40);
-					for (var i = 0; i < 40; i++) {
-					  arr6[i] = new Array(2);
-					};
-					allText.map(function(item){
-					  var tabs = item.split('\t');
-					  //console.log("0",tabs[0], "1",tabs[1], "2",tabs[2],"3", tabs[3],"4", tabs[4]);
-					  arr1.push(tabs[0]);
-					  arr1.push(tabs[1]);
-					  arr1.push(tabs[2]);
-					  arr1.push(tabs[3]);
-					  arr1.push(tabs[4]);
-					  arr1.push(tabs[5]);
-					  arr1.push(tabs[6]);
-					  arr1.push(tabs[7]);
-					  arr1.push(tabs[8]);
-					});
-					//alert(arr1);
-					input = [];
-					var locs = [];
-					var tab = [];
-					for (var i = 0; i < 400; i++){
-						for (var j = 0; j<9; j++){
-							tab[j] = parseFloat(arr1[9*i+j]);
-						};
-						input[i] = [tab[0],tab[1],tab[2],tab[3],tab[4],tab[5],tab[6],tab[7],tab[8]];
-						
-					};
-					//alert(input);
-					//console.log(input);
-					for (var m = 0; m < 10; m++){
-						for (var i = 0; i < 6; i++){
-							for (var j = 0; j < 5; j++){
-								arr6[5*i+j][0]=i+1;
-								arr6[5*i+j][1]=j+1;
-							//i+1 t_loc; j+1 t_d_distance
-							};
-						};
-						for (var n = 0; n < 10; n ++){
-							var a = Math.floor((Math.random() * 6) + 1);
-							var b = Math.floor((Math.random() * 5) + 1);
-							 arr6[30+n][0]=a;
-							 arr6[30+n][1]=b;
-						};
-						var loc = [];
-						loc = _.shuffle(arr6);
-						//alert(loc);
-						for (var i = 0; i < 40; i++){
-							locs[40*m+i]=loc[i];
-						};
-					};
-					
-					var first = [];
-					var t_loc = [];
-					var d_loc = [];
-					stimuli = [];
-					for (var h = 0; h < 400; h++){
-						first = input[h];
-						//console.log(first);
-						t_loc = locs[h][0];
-						d_loc = locs[h][1];
-						//console.log(second);
-						first.push(t_loc);
-						first.push(d_loc);
-						stimuli[h] =first;
-					};
-					//console.log(stimuli);				
+		rawFile.open("GET", file, false); // true for asynchronous request
+		rawFile.onreadystatechange = function() {
+			if(rawFile.readyState === 4 && rawFile.status === 200) {
+				allText = rawFile.responseText.split("\n");
+				//allText = rawFile.responseText.toString().split("\n");
+				//console.log(allText);
+				var arr1 = [];
+				var arr2 = [];
+				var arr3 = [];
+				var arr4 = [];
+				var arr5 = [];
+				//var arr6 = [];
+				arr6 = new Array(40);
+				for (var i = 0; i < 40; i++) {
+					arr6[i] = new Array(2);
 				}
+				allText.map(function(item){
+				  var tabs = item.split('\t');
+				  console.log(tabs[0].length);
+				  arr1.push(tabs[0]);
+				  arr1.push(tabs[1]);
+				  arr1.push(tabs[2]);
+				  arr1.push(tabs[3]);
+				  arr1.push(tabs[4]);
+				  arr1.push(tabs[5]);
+				  arr1.push(tabs[6]);
+				  arr1.push(tabs[7]);
+				  arr1.push(tabs[8]);
+				});
+				//alert(arr1);
+				input = [];
+				var locs = [];
+				var tab = [];
+				for (var i = 0; i < 400; i++){
+					for (var j = 0; j<9; j++){
+						tab[j] = parseFloat(arr1[9*i+j]);
+					};
+					input[i] = [tab[0],tab[1],tab[2],tab[3],tab[4],tab[5],tab[6],tab[7],tab[8]];
+
+				};
+				//alert(input);
+				//console.log(input);
+				for (var m = 0; m < 10; m++){
+					for (var i = 0; i < 6; i++){
+						for (var j = 0; j < 5; j++){
+							arr6[5*i+j][0]=i+1;
+							arr6[5*i+j][1]=j+1;
+						//i+1 t_loc; j+1 t_d_distance
+						};
+					};
+					for (var n = 0; n < 10; n ++){
+						var a = Math.floor((Math.random() * 6) + 1);
+						var b = Math.floor((Math.random() * 5) + 1);
+						 arr6[30+n][0]=a;
+						 arr6[30+n][1]=b;
+					};
+					var loc = [];
+					loc = _.shuffle(arr6);
+					//alert(loc);
+					for (var i = 0; i < 40; i++){
+						locs[40*m+i]=loc[i];
+					};
+				};
+
+				var first = [];
+				var t_loc = [];
+				var d_loc = [];
+				stimuli = [];
+				for (var h = 0; h < 400; h++){
+					first = input[h];
+					//console.log(first);
+					t_loc = locs[h][0];
+					d_loc = locs[h][1];
+					//console.log(second);
+					first.push(t_loc);
+					first.push(d_loc);
+					stimuli[h] =first;
+				};
+				//console.log(stimuli);
+				// }
 			}
 		}
 		rawFile.send(null);
 	};
-	
+
 	function readColorSpace(file){
 		var rawFile = new XMLHttpRequest();
 		rawFile.open("GET", file, false);
@@ -170,20 +165,20 @@ var Practice1 = function() {
 							tab[j] = parseFloat(arr1[3*i+j]);
 						};
 						input[i] = [tab[0],tab[1],tab[2]];
-						
+
 					};
-					
+
 				colorspace =input;
-				//console.log(colorspace);				
+				//console.log(colorspace);
 				}
 			}
 		}
 		rawFile.send(null);
 	};
-	
+
 	readTextFile("/static/Trial_Type.txt");
 	readColorSpace("/static/colorSpace.txt");
-	
+
 	var wordon, // time search is presented
 	    listening = false;
 
@@ -195,7 +190,7 @@ var Practice1 = function() {
 	pracstims = stims.slice(0, 10);
 	//console.log(stims);
 	//console.log(condition);
-	
+
 	var next = function() {
 		if (pracstims.length===0) {
 			var s = Snap('#svgMain');
@@ -223,7 +218,7 @@ var Practice1 = function() {
 			document.removeEventListener("click",getClickPosition, false);
 		}
 	};
-	
+
 	var response_handler = function(e) {
 		if (!listening) return;
 
@@ -250,7 +245,7 @@ var Practice1 = function() {
 				if (condition == 1){
 					response="right";
 					break;
-				};				
+				};
 			default:
 				response = "";
 				break;
@@ -289,16 +284,16 @@ var Practice1 = function() {
 		$("body").unbind("keydown", response_handler); // Unbind keys
 		document.addEventListener("keydown",finishprac, false);
 	};
-	
+
 	var finishprac = function(e){
 			if (e.keyCode == 32) {
 				document.removeEventListener("keydown",finishprac,false);
 				currentview = new Practice2();
 			}
 		};
-	
-	
-	
+
+
+
 	var circle_locs = Array(
 					Array(540,260),
 					Array(661,330),
@@ -307,7 +302,7 @@ var Practice1 = function() {
 					Array(419,470),
 					Array(419,330)
 					);
-					
+
 	var get_lure_loc = function(){
 		var t_loc = stim[9];
 		var svgdim = document.getElementById("svgMain").getBoundingClientRect();
@@ -352,10 +347,10 @@ var Practice1 = function() {
 		var y2 = y0 - 40* Math.sin(lure_deg / 180 * Math.PI - Math.PI / 2);
 		var locs = [x1, y1, x2, y2];
 		//console.log(locs);
-		
+
 		return locs;
-	};	
-	
+	};
+
 	var get_cue_loc = function(){
 		a0 = 540;
 		b0 = 400;
@@ -367,9 +362,9 @@ var Practice1 = function() {
 		var locs = [a1, b1, a2, b2];
 		return locs;
 	};
-	
-	
-	
+
+
+
 	var show_fixation = function(){
 		document.body.style.cursor = 'none';
 		var event = $(document).click(function(e) {
@@ -382,17 +377,17 @@ var Practice1 = function() {
 		var horizontal = s.line(520,400,560,400);
 		horizontal.attr({
 		  id:"fix1",
-		  stroke: "rgb(255, 255, 255)", 
+		  stroke: "rgb(255, 255, 255)",
 		  strokeWidth:10
 		});
 		var vertical = s.line(540, 380, 540, 420);
 		vertical.attr({
 		  id:"fix2",
-		  stroke: "rgb(255, 255, 255)", 
+		  stroke: "rgb(255, 255, 255)",
 		  strokeWidth:10
 		});
 	};
-	
+
 	var SOA1 = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -404,7 +399,7 @@ var Practice1 = function() {
 		  strokeWidth:10
 		})
 	};
-	
+
 	var SOA2 = function(){
 		listening = false;
 		var s = Snap('#svgMain');
@@ -430,7 +425,7 @@ var Practice1 = function() {
 										 'rt':0}
                                    );
 	};
-	
+
 	var show_cue = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -450,8 +445,8 @@ var Practice1 = function() {
 		});
 		var cue_ins = s.image("/static/images/CueInstruction.png",315,500);
 	};
-		
-		
+
+
 	var show_word = function() {
 		var s = Snap('#svgMain');
 		s.clear();
@@ -496,7 +491,7 @@ var Practice1 = function() {
 			stroke:colorstroke[1],
 			strokeWidth:10
 		});
-		
+
 		var circle3 = s.circle(circle_locs[2][0], circle_locs[2][1], 50);
 		circle3.attr({
 			id:"circle3",
@@ -504,7 +499,7 @@ var Practice1 = function() {
 			stroke:colorstroke[2],
 			strokeWidth:10
 		});
-		
+
 		var circle4 = s.circle(circle_locs[3][0], circle_locs[3][1], 50);
 		circle4.attr({
 			id: "circle4",
@@ -512,7 +507,7 @@ var Practice1 = function() {
 			stroke:colorstroke[3],
 			strokeWidth:10
 		});
-		
+
 		var circle5 = s.circle(circle_locs[4][0], circle_locs[4][1], 50);
 		circle5.attr({
 			id:"circle5",
@@ -540,7 +535,7 @@ var Practice1 = function() {
 		circle4.transform(str);
 		circle5.transform(str);
 		circle6.transform(str);
-		
+
 		var svgdim = document.getElementById("svgMain").getBoundingClientRect();
 		circledim = document.getElementById("circle1").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
@@ -555,10 +550,10 @@ var Practice1 = function() {
 		var line1 = s.line(x1,y1,x2,y2);
 		line1.attr({
 			 id:"line1",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle2").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -572,10 +567,10 @@ var Practice1 = function() {
 		var line2 = s.line(x1,y1,x2,y2);
 		line2.attr({
 			 id:"line2",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle3").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -589,10 +584,10 @@ var Practice1 = function() {
 		var line3 = s.line(x1,y1,x2,y2);
 		line3.attr({
 			 id:"line3",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle4").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -606,10 +601,10 @@ var Practice1 = function() {
 		var line4 = s.line(x1,y1,x2,y2);
 		line4.attr({
 			 id:"line4",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle5").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -623,10 +618,10 @@ var Practice1 = function() {
 		var line5 = s.line(x1,y1,x2,y2);
 		line5.attr({
 			 id:"line5",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle6").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -640,7 +635,7 @@ var Practice1 = function() {
 		var line6 = s.line(x1,y1,x2,y2);
 		line6.attr({
 			 id:"line6",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
 		var coordinates = get_lure_loc();
@@ -668,7 +663,7 @@ var Practice1 = function() {
 		var tgt = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 		tgt.attr({
 			id:"tgt",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
 		wordon = new Date().getTime();
@@ -692,7 +687,7 @@ var Practice1 = function() {
 		response2_start = new Date().getTime();
 		document.getElementById("svgMain").addEventListener("mousedown",getClickPosition, false);
 	};
-	
+
 	var getClickPosition = function(evt) {
 		var e = evt.target;
 		var dim = document.getElementById("svgMain").getBoundingClientRect();
@@ -720,7 +715,7 @@ var Practice1 = function() {
 				var coordinates = [540, 727.2, 540, 800];
 			};
 		};
-		
+
 		new_deg = deg;
 		actual_deg = deg;
 
@@ -731,7 +726,7 @@ var Practice1 = function() {
 			};
 		//console.log("new_deg"+ new_deg);
 		//console.log("actual_deg"+ actual_deg);
-			
+
 		if (xPos != 400){
 			var coordinates = get_line_loc(deg);
 		};
@@ -741,7 +736,7 @@ var Practice1 = function() {
 		line = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 		line.attr({
 			  id:"line",
-			  stroke: "rgb(255,255,255)", 
+			  stroke: "rgb(255,255,255)",
 			  strokeWidth:10
 			});
 		if (document.getElementById("probe") !== null){
@@ -763,7 +758,7 @@ var Practice1 = function() {
 			  fill: probe_clr,
 			  strokeWidth:10
 			});
-		
+
 		ifrotate = false;
 		dragging = false;
 		ifdrag = false;
@@ -771,7 +766,7 @@ var Practice1 = function() {
 		document.addEventListener("keypress", tonext, false);
 		document.getElementById("line").addEventListener("mousedown",clickdown,false);
 	};
-	
+
 	var clickdown = function(e){
 		ifrotate = true;
 		var dim = document.getElementById("svgMain").getBoundingClientRect();
@@ -782,7 +777,7 @@ var Practice1 = function() {
 		dragging = true;
 		document.addEventListener("mousemove", dragtomove, false);
 	};
-	
+
 	var dragtomove = function(e){
 		if(dragging){
 			ifdrag = true;
@@ -820,7 +815,7 @@ var Practice1 = function() {
 			line = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 			line.attr({
 			  id:"line",
-			  stroke: "rgb(255,255,255)", 
+			  stroke: "rgb(255,255,255)",
 			  strokeWidth:10
 				});
 			};
@@ -852,16 +847,16 @@ var Practice1 = function() {
 				  fill: probe_clr,
 				  strokeWidth:10
 				});
-			
+
 			document.addEventListener("mouseup",finishdrag,false)
 		};
 	};
-	
+
 	var finishdrag = function (e){
 		dragging = false;
 	};
-		
-	
+
+
 	var tonext = function(e){
 		if (e.charCode == 32){
 			var last_angle = actual_deg;
@@ -883,10 +878,10 @@ var Practice1 = function() {
                                      'deg_report': last_angle,
                                      'WMRT': rt2
                                      });
-			ITI();  
+			ITI();
 		};
 	};
-	
+
 	var ITI = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -900,7 +895,7 @@ var Practice1 = function() {
 		handle7 = setTimeout(function(){
 				next()},500);
 	};
-				
+
 	var get_line_loc = function(d){
 		a0 = 540;
 		b0 = 400;
@@ -916,26 +911,26 @@ var Practice1 = function() {
 			var a2 = a0 - 350* Math.cos(1.5 * Math.PI-d);
 			var b2 = b0 + 350* Math.sin(1.5 * Math.PI-d);
 		};
-		var locs = [a1, b1, a2, b2]; 
+		var locs = [a1, b1, a2, b2];
 		return locs;
-	}; 
+	};
 
 
-	
+
 	// Load the stage.html snippet into the body of the page
 	psiTurk.showPage('stage.html');
 
 	// Register the response handler that is defined above to handle any
 	// key down events.
-	$("body").focus().keydown(response_handler); 
+	$("body").focus().keydown(response_handler);
 
 	// Start the test
-	
+
 	next();
 };
 
 var Practice2 = function() {
-	
+
 	var wordon, // time word is presented
 	    listening = false;
 
@@ -945,7 +940,7 @@ var Practice2 = function() {
 	stims = _.shuffle(stimuli);
 	pracstims = stims.slice(0, 10);
 	//console.log(pracstims);
-	
+
 	var next = function() {
 		if (pracstims.length===0) {
 			var s = Snap('#svgMain');
@@ -972,8 +967,8 @@ var Practice2 = function() {
 			document.removeEventListener("click",getClickPosition, false);
 		}
 	};
-	
-		
+
+
 	var response_handler = function(e) {
 		if (!listening) return;
 
@@ -1000,7 +995,7 @@ var Practice2 = function() {
 				if (condition == 1){
 					response="right";
 					break;
-				};				
+				};
 			default:
 				response = "";
 				break;
@@ -1039,15 +1034,15 @@ var Practice2 = function() {
 		$("body").unbind("keydown", response_handler); // Unbind keys
 		document.addEventListener("keydown",finishprac, false);
 	};
-	
+
 	var finishprac = function(e){
 			if (e.keyCode == 32) {
 				document.removeEventListener("keydown",finishprac,false);
 				currentview = new StroopExperiment();
 			}
 		};
-	
-	
+
+
 	var circle_locs = Array(
 					Array(540,260),
 					Array(661,330),
@@ -1056,7 +1051,7 @@ var Practice2 = function() {
 					Array(419,470),
 					Array(419,330)
 					);
-					
+
 	var get_lure_loc = function(){
 		var t_loc = stim[9];
 		var svgdim = document.getElementById("svgMain").getBoundingClientRect();
@@ -1101,10 +1096,10 @@ var Practice2 = function() {
 		var y2 = y0 - 40* Math.sin(lure_deg / 180 * Math.PI - Math.PI / 2);
 		var locs = [x1, y1, x2, y2];
 		//console.log(locs);
-		
+
 		return locs;
-	};	
-	
+	};
+
 	var get_cue_loc = function(){
 		a0 = 540;
 		b0 = 400;
@@ -1116,26 +1111,26 @@ var Practice2 = function() {
 		var locs = [a1, b1, a2, b2];
 		return locs;
 	};
-	
-	
-	
+
+
+
 	var show_fixation = function(){
 		document.body.style.cursor = 'none';
 		var s = Snap('#svgMain');
 		var horizontal = s.line(520,400,560,400);
 		horizontal.attr({
 		  id:"fix1",
-		  stroke: "rgb(255, 255, 255)", 
+		  stroke: "rgb(255, 255, 255)",
 		  strokeWidth:10
 		});
 		var vertical = s.line(540, 380, 540, 420);
 		vertical.attr({
 		  id:"fix2",
-		  stroke: "rgb(255, 255, 255)", 
+		  stroke: "rgb(255, 255, 255)",
 		  strokeWidth:10
 		});
 	};
-	
+
 	var SOA1 = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -1147,7 +1142,7 @@ var Practice2 = function() {
 		  strokeWidth:10
 		})
 	};
-	
+
 	var SOA2 = function(){
 		listening = false;
 		var s = Snap('#svgMain');
@@ -1173,7 +1168,7 @@ var Practice2 = function() {
 										 'rt':0}
                                    );
 	};
-	
+
 	var show_cue = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -1192,8 +1187,8 @@ var Practice2 = function() {
 		  strokeWidth:10
 		});
 	};
-		
-		
+
+
 	var show_word = function() {
 		var s = Snap('#svgMain');
 		s.clear();
@@ -1232,7 +1227,7 @@ var Practice2 = function() {
 			stroke:colorstroke[1],
 			strokeWidth:10
 		});
-		
+
 		var circle3 = s.circle(circle_locs[2][0], circle_locs[2][1], 50);
 		circle3.attr({
 			id:"circle3",
@@ -1240,7 +1235,7 @@ var Practice2 = function() {
 			stroke:colorstroke[2],
 			strokeWidth:10
 		});
-		
+
 		var circle4 = s.circle(circle_locs[3][0], circle_locs[3][1], 50);
 		circle4.attr({
 			id: "circle4",
@@ -1248,7 +1243,7 @@ var Practice2 = function() {
 			stroke:colorstroke[3],
 			strokeWidth:10
 		});
-		
+
 		var circle5 = s.circle(circle_locs[4][0], circle_locs[4][1], 50);
 		circle5.attr({
 			id:"circle5",
@@ -1276,7 +1271,7 @@ var Practice2 = function() {
 		circle4.transform(str);
 		circle5.transform(str);
 		circle6.transform(str);
-		
+
 		var svgdim = document.getElementById("svgMain").getBoundingClientRect();
 		circledim = document.getElementById("circle1").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
@@ -1291,10 +1286,10 @@ var Practice2 = function() {
 		var line1 = s.line(x1,y1,x2,y2);
 		line1.attr({
 			 id:"line1",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle2").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -1308,10 +1303,10 @@ var Practice2 = function() {
 		var line2 = s.line(x1,y1,x2,y2);
 		line2.attr({
 			 id:"line2",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle3").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -1325,10 +1320,10 @@ var Practice2 = function() {
 		var line3 = s.line(x1,y1,x2,y2);
 		line3.attr({
 			 id:"line3",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle4").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -1342,10 +1337,10 @@ var Practice2 = function() {
 		var line4 = s.line(x1,y1,x2,y2);
 		line4.attr({
 			 id:"line4",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle5").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -1359,10 +1354,10 @@ var Practice2 = function() {
 		var line5 = s.line(x1,y1,x2,y2);
 		line5.attr({
 			 id:"line5",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle6").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -1376,7 +1371,7 @@ var Practice2 = function() {
 		var line6 = s.line(x1,y1,x2,y2);
 		line6.attr({
 			 id:"line6",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
 		var coordinates = get_lure_loc();
@@ -1404,7 +1399,7 @@ var Practice2 = function() {
 		var tgt = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 		tgt.attr({
 			id:"tgt",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
 		wordon = new Date().getTime();
@@ -1427,7 +1422,7 @@ var Practice2 = function() {
 		response2_start = new Date().getTime();
 		document.getElementById("svgMain").addEventListener("mousedown",getClickPosition, false);
 	};
-	
+
 	var getClickPosition = function(evt) {
 		var e = evt.target;
 		var dim = document.getElementById("svgMain").getBoundingClientRect();
@@ -1455,7 +1450,7 @@ var Practice2 = function() {
 				var coordinates = [540, 727.2, 540, 800];
 			};
 		};
-		
+
 		new_deg = deg;
 		actual_deg = deg;
 
@@ -1466,7 +1461,7 @@ var Practice2 = function() {
 			};
 		console.log("new_deg"+ new_deg);
 		console.log("actual_deg"+ actual_deg);
-			
+
 		if (xPos != 400){
 			var coordinates = get_line_loc(deg);
 		};
@@ -1476,7 +1471,7 @@ var Practice2 = function() {
 		line = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 		line.attr({
 			  id:"line",
-			  stroke: "rgb(255,255,255)", 
+			  stroke: "rgb(255,255,255)",
 			  strokeWidth:10
 			});
 		if (document.getElementById("probe") !== null){
@@ -1498,7 +1493,7 @@ var Practice2 = function() {
 			  fill: probe_clr,
 			  strokeWidth:10
 			});
-		
+
 		ifrotate = false;
 		dragging = false;
 		ifdrag = false;
@@ -1506,7 +1501,7 @@ var Practice2 = function() {
 		document.addEventListener("keypress", tonext, false);
 		document.getElementById("line").addEventListener("mousedown",clickdown,false);
 	};
-	
+
 	var clickdown = function(e){
 		ifrotate = true;
 		var dim = document.getElementById("svgMain").getBoundingClientRect();
@@ -1517,7 +1512,7 @@ var Practice2 = function() {
 		dragging = true;
 		document.addEventListener("mousemove", dragtomove, false);
 	};
-	
+
 	var dragtomove = function(e){
 		if(dragging){
 			ifdrag = true;
@@ -1555,7 +1550,7 @@ var Practice2 = function() {
 			line = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 			line.attr({
 			  id:"line",
-			  stroke: "rgb(255,255,255)", 
+			  stroke: "rgb(255,255,255)",
 			  strokeWidth:10
 				});
 			};
@@ -1587,16 +1582,16 @@ var Practice2 = function() {
 				  fill: probe_clr,
 				  strokeWidth:10
 				});
-			
+
 			document.addEventListener("mouseup",finishdrag,false)
 		};
 	};
-	
+
 	var finishdrag = function (e){
 		dragging = false;
 	};
-		
-	
+
+
 	var tonext = function(e){
 		if (e.charCode == 32){
 			var last_angle = actual_deg;
@@ -1618,10 +1613,10 @@ var Practice2 = function() {
                                      'deg_report': last_angle,
                                      'WMRT': rt2
                                      });
-			ITI();  
+			ITI();
 		};
 	};
-	
+
 	var ITI = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -1635,7 +1630,7 @@ var Practice2 = function() {
 		handle7 = setTimeout(function(){
 				next()},500);
 	};
-				
+
 	var get_line_loc = function(d){
 		a0 = 540;
 		b0 = 400;
@@ -1651,20 +1646,20 @@ var Practice2 = function() {
 			var a2 = a0 - 350* Math.cos(1.5 * Math.PI-d);
 			var b2 = b0 + 350* Math.sin(1.5 * Math.PI-d);
 		};
-		var locs = [a1, b1, a2, b2]; 
+		var locs = [a1, b1, a2, b2];
 		return locs;
-	}; 
+	};
 
-	
+
 	// Load the stage.html snippet into the body of the page
 	psiTurk.showPage('stage.html');
 
 	// Register the response handler that is defined above to handle any
 	// key down events.
-	$("body").focus().keydown(response_handler); 
+	$("body").focus().keydown(response_handler);
 
 	// Start the test
-	
+
 	next();
 };
 
@@ -1673,13 +1668,13 @@ var Practice2 = function() {
 * Task block       *
 ********************/
 var StroopExperiment = function() {
-	
+
 
 	var wordon, // time word is presented
 	    listening = false;
 
 	//0 tgt_ori 1 WM_ori 2 rotation 3 trial# 4 dis_type 5 t_loc 6 d_loc
-	
+
 	stims = _.shuffle(stimuli);
 	//console.log(stims);
 	//stims = stims.slice(0, 5);
@@ -1711,9 +1706,9 @@ var StroopExperiment = function() {
 			document.removeEventListener("mousedown",getClickPosition, false);
 		}
 	};
-	
 
-	
+
+
 	var response_handler = function(e) {
 		if (!listening) return;
 
@@ -1740,7 +1735,7 @@ var StroopExperiment = function() {
 				if (condition == 1){
 					response="right";
 					break;
-				};				
+				};
 			default:
 				response = "";
 				break;
@@ -1778,8 +1773,8 @@ var StroopExperiment = function() {
 	    $("body").unbind("keydown", response_handler); // Unbind keys
 	    currentview = new Questionnaire();
 	};
-	
-	
+
+
 var circle_locs = Array(
 					Array(540,260),
 					Array(661,330),
@@ -1788,7 +1783,7 @@ var circle_locs = Array(
 					Array(419,470),
 					Array(419,330)
 					);
-					
+
 	var get_lure_loc = function(){
 		var t_loc = stim[9];
 		var svgdim = document.getElementById("svgMain").getBoundingClientRect();
@@ -1833,10 +1828,10 @@ var circle_locs = Array(
 		var y2 = y0 - 40* Math.sin(lure_deg / 180 * Math.PI - Math.PI / 2);
 		var locs = [x1, y1, x2, y2];
 		//console.log(locs);
-		
+
 		return locs;
-	};	
-	
+	};
+
 	var get_cue_loc = function(){
 		a0 = 540;
 		b0 = 400;
@@ -1848,26 +1843,26 @@ var circle_locs = Array(
 		var locs = [a1, b1, a2, b2];
 		return locs;
 	};
-	
-	
-	
+
+
+
 	var show_fixation = function(){
 		document.body.style.cursor = 'none';
 		var s = Snap('#svgMain');
 		var horizontal = s.line(520,400,560,400);
 		horizontal.attr({
 		  id:"fix1",
-		  stroke: "rgb(255, 255, 255)", 
+		  stroke: "rgb(255, 255, 255)",
 		  strokeWidth:10
 		});
 		var vertical = s.line(540, 380, 540, 420);
 		vertical.attr({
 		  id:"fix2",
-		  stroke: "rgb(255, 255, 255)", 
+		  stroke: "rgb(255, 255, 255)",
 		  strokeWidth:10
 		});
 	};
-	
+
 	var SOA1 = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -1879,7 +1874,7 @@ var circle_locs = Array(
 		  strokeWidth:10
 		})
 	};
-	
+
 	var SOA2 = function(){
 		listening = false;
 		var s = Snap('#svgMain');
@@ -1905,7 +1900,7 @@ var circle_locs = Array(
 										 'rt':0}
                                    );
 	};
-	
+
 	var show_cue = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -1924,8 +1919,8 @@ var circle_locs = Array(
 		  strokeWidth:10
 		});
 	};
-		
-		
+
+
 	var show_word = function() {
 		var s = Snap('#svgMain');
 		s.clear();
@@ -1964,7 +1959,7 @@ var circle_locs = Array(
 			stroke:colorstroke[1],
 			strokeWidth:10
 		});
-		
+
 		var circle3 = s.circle(circle_locs[2][0], circle_locs[2][1], 50);
 		circle3.attr({
 			id:"circle3",
@@ -1972,7 +1967,7 @@ var circle_locs = Array(
 			stroke:colorstroke[2],
 			strokeWidth:10
 		});
-		
+
 		var circle4 = s.circle(circle_locs[3][0], circle_locs[3][1], 50);
 		circle4.attr({
 			id: "circle4",
@@ -1980,7 +1975,7 @@ var circle_locs = Array(
 			stroke:colorstroke[3],
 			strokeWidth:10
 		});
-		
+
 		var circle5 = s.circle(circle_locs[4][0], circle_locs[4][1], 50);
 		circle5.attr({
 			id:"circle5",
@@ -2008,7 +2003,7 @@ var circle_locs = Array(
 		circle4.transform(str);
 		circle5.transform(str);
 		circle6.transform(str);
-		
+
 		var svgdim = document.getElementById("svgMain").getBoundingClientRect();
 		circledim = document.getElementById("circle1").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
@@ -2023,10 +2018,10 @@ var circle_locs = Array(
 		var line1 = s.line(x1,y1,x2,y2);
 		line1.attr({
 			 id:"line1",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle2").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -2040,10 +2035,10 @@ var circle_locs = Array(
 		var line2 = s.line(x1,y1,x2,y2);
 		line2.attr({
 			 id:"line2",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle3").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -2057,10 +2052,10 @@ var circle_locs = Array(
 		var line3 = s.line(x1,y1,x2,y2);
 		line3.attr({
 			 id:"line3",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle4").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -2074,10 +2069,10 @@ var circle_locs = Array(
 		var line4 = s.line(x1,y1,x2,y2);
 		line4.attr({
 			 id:"line4",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle5").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -2091,10 +2086,10 @@ var circle_locs = Array(
 		var line5 = s.line(x1,y1,x2,y2);
 		line5.attr({
 			 id:"line5",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
-		
+
 		circledim = document.getElementById("circle6").getBoundingClientRect();
 		circle_x = circledim.left-svgdim.left+circledim.width/2;
 		circle_y = circledim.top-svgdim.top+circledim.width/2;
@@ -2108,7 +2103,7 @@ var circle_locs = Array(
 		var line6 = s.line(x1,y1,x2,y2);
 		line6.attr({
 			 id:"line6",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
 		var coordinates = get_lure_loc();
@@ -2136,7 +2131,7 @@ var circle_locs = Array(
 		var tgt = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 		tgt.attr({
 			id:"tgt",
-			 stroke: "white", 
+			 stroke: "white",
 			 strokeWidth:10
 		});
 		wordon = new Date().getTime();
@@ -2158,7 +2153,7 @@ var circle_locs = Array(
 		response2_start = new Date().getTime();
 		document.getElementById("svgMain").addEventListener("mousedown",getClickPosition, false);
 	};
-	
+
 	var getClickPosition = function(evt) {
 		var e = evt.target;
 		var dim = document.getElementById("svgMain").getBoundingClientRect();
@@ -2186,7 +2181,7 @@ var circle_locs = Array(
 				var coordinates = [540, 727.2, 540, 800];
 			};
 		};
-		
+
 		new_deg = deg;
 		actual_deg = deg;
 
@@ -2197,7 +2192,7 @@ var circle_locs = Array(
 			};
 		//console.log("new_deg"+ new_deg);
 		//console.log("actual_deg"+ actual_deg);
-			
+
 		if (xPos != 400){
 			var coordinates = get_line_loc(deg);
 		};
@@ -2207,7 +2202,7 @@ var circle_locs = Array(
 		line = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 		line.attr({
 			  id:"line",
-			  stroke: "rgb(255,255,255)", 
+			  stroke: "rgb(255,255,255)",
 			  strokeWidth:10
 			});
 		if (document.getElementById("probe") !== null){
@@ -2229,7 +2224,7 @@ var circle_locs = Array(
 			  fill: probe_clr,
 			  strokeWidth:10
 			});
-		
+
 		ifrotate = false;
 		dragging = false;
 		ifdrag = false;
@@ -2237,7 +2232,7 @@ var circle_locs = Array(
 		document.addEventListener("keypress", tonext, false);
 		document.getElementById("line").addEventListener("mousedown",clickdown,false);
 	};
-	
+
 	var clickdown = function(e){
 		ifrotate = true;
 		var dim = document.getElementById("svgMain").getBoundingClientRect();
@@ -2248,7 +2243,7 @@ var circle_locs = Array(
 		dragging = true;
 		document.addEventListener("mousemove", dragtomove, false);
 	};
-	
+
 	var dragtomove = function(e){
 		if(dragging){
 			ifdrag = true;
@@ -2286,7 +2281,7 @@ var circle_locs = Array(
 			line = s.line(coordinates[0],coordinates[1],coordinates[2],coordinates[3]);
 			line.attr({
 			  id:"line",
-			  stroke: "rgb(255,255,255)", 
+			  stroke: "rgb(255,255,255)",
 			  strokeWidth:10
 				});
 			};
@@ -2318,16 +2313,16 @@ var circle_locs = Array(
 				  fill: probe_clr,
 				  strokeWidth:10
 				});
-			
+
 			document.addEventListener("mouseup",finishdrag,false)
 		};
 	};
-	
+
 	var finishdrag = function (e){
 		dragging = false;
 	};
-		
-	
+
+
 	var tonext = function(e){
 		if (e.charCode == 32){
 			var last_angle = actual_deg;
@@ -2349,11 +2344,11 @@ var circle_locs = Array(
                                      'deg_report': last_angle,
                                      'WMRT': rt2
                                      });
-			ITI();  
+			ITI();
 		};
 	};
 
-	
+
 	var ITI = function(){
 		var s = Snap('#svgMain');
 		s.clear();
@@ -2368,7 +2363,7 @@ var circle_locs = Array(
 		handle7 = setTimeout(function(){
 				ifbreak()},500);
 	};
-	
+
 	var ifbreak = function(){
 		if (trial_count % 100 == 0 && trial_count != 400){
 			var s = Snap('#svgMain');
@@ -2380,15 +2375,15 @@ var circle_locs = Array(
 			next();
 		};
 	};
-	
+
 	var nextblock = function(e){
 		if (e.keyCode == 32){
 			document.removeEventListener("keypress",nextblock,false);
 			clearTimeout(handle7);
 			next();
 		}
-	};	
-	
+	};
+
 	var get_line_loc = function(d){
 		a0 = 540;
 		b0 = 400;
@@ -2404,18 +2399,18 @@ var circle_locs = Array(
 			var a2 = a0 - 350* Math.cos(1.5 * Math.PI-d);
 			var b2 = b0 + 350* Math.sin(1.5 * Math.PI-d);
 		};
-		var locs = [a1, b1, a2, b2]; 
+		var locs = [a1, b1, a2, b2];
 		return locs;
-	}; 
-	
+	};
 
-	
+
+
 	// Load the stage.html snippet into the body of the page
 	psiTurk.showPage('stage.html');
 
 	// Register the response handler that is defined above to handle any
 	// key down events.
-	$("body").focus().keydown(response_handler); 
+	$("body").focus().keydown(response_handler);
 
 	// Start the test
 	next();
@@ -2438,10 +2433,10 @@ var Questionnaire = function() {
 			psiTurk.recordUnstructuredData(this.id, this.value);
 		});
 		$('select').each( function(i, val) {
-			psiTurk.recordUnstructuredData(this.id, this.value);		
+			psiTurk.recordUnstructuredData(this.id, this.value);
 		});
 		$('input').each( function(i, val) {
-			psiTurk.recordUnstructuredData(this.id, this.value);		
+			psiTurk.recordUnstructuredData(this.id, this.value);
 		});
 
 
@@ -2455,32 +2450,32 @@ var Questionnaire = function() {
 	resubmit = function() {
 		document.body.innerHTML = "<h1>Trying to resubmit...</h1>";
 		reprompt = setTimeout(prompt_resubmit, 10000);
-		
+
 		psiTurk.saveData({
 			success: function() {
-			    clearInterval(reprompt); 
-                //psiTurk.computeBonus('compute_bonus', function(){finish()}); 
+			    clearInterval(reprompt);
+                //psiTurk.computeBonus('compute_bonus', function(){finish()});
                 finish();
-			}, 
+			},
 			error: prompt_resubmit
 		});
 	};
 
-	// Load the questionnaire snippet 
+	// Load the questionnaire snippet
 	psiTurk.showPage('postquestionnaire.html');
 	psiTurk.recordTrialData({'phase':'postquestionnaire', 'status':'begin'});
-	
+
 	$("#next").click(function () {
 	    record_responses();
 	    psiTurk.saveData({
             success: function(){
-                //psiTurk.computeBonus('compute_bonus', function() { 
+                //psiTurk.computeBonus('compute_bonus', function() {
                 	psiTurk.completeHIT(); // when finished saving compute bonus, the quit
-                //}); 
-            }, 
+                //});
+            },
             error: prompt_resubmit});
 	});
-    
+
 	/*function ping(url) {
 		var encodedURL = encodeURIComponent(url);
 		var startDate = new Date();
@@ -2509,8 +2504,8 @@ var Questionnaire = function() {
 		return endDate.getTime() - startDate.getTime();
 	};
 	var responseInMillis = ping("example.com");*/
-	
-	
+
+
 };
 
 // Task object to keep track of the current phase
