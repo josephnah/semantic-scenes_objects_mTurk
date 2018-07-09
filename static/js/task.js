@@ -7,8 +7,11 @@
 // Initalize psiturk object
 var psiTurk = new PsiTurk(uniqueId, adServerLoc, mode);
 
+
+// Define variables used in experiment
 var mycondition = condition;  // these two variables are passed by the psiturk server process
 var mycounterbalance = counterbalance;  // they tell you which condition you have been assigned to
+var trial_matrix
 // they are not used in the stroop code but may be useful to you
 
 // All pages to be loaded
@@ -138,46 +141,36 @@ var Practice1 = function() {
 		rawFile.send(null);
 	};
 
-	function readColorSpace(file){
-		var rawFile = new XMLHttpRequest();
-		rawFile.open("GET", file, false);
-		rawFile.onreadystatechange = function ()
-		{
-			if(rawFile.readyState === 4)
-			{
-				if(rawFile.status === 200 || rawFile.status == 0)
-				{
-					allText = rawFile.responseText.split("\n");
-					//allText = rawFile.responseText.toString().split("\n");
-					//console.log(allText);
-					var arr1 = [];
-					allText.map(function(item){
-					  var tabs = item.split('\t');
-					  //console.log("0",tabs[0], "1",tabs[1], "2",tabs[2],"3", tabs[3],"4", tabs[4]);
-					  arr1.push(tabs[0]);
-					  arr1.push(tabs[1]);
-					  arr1.push(tabs[2]);
-					});
-					input = [];
-					var tab = [];
-					for (var i = 0; i < 400; i++){
-						for (var j = 0; j<3; j++){
-							tab[j] = parseFloat(arr1[3*i+j]);
-						};
-						input[i] = [tab[0],tab[1],tab[2]];
+	// Reads and shuffles (if necessary) text/csv file
+	// modified by joecool890 on 2018-06-09
+	function readTextFile2(file, shuffle){
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function (){
+            // Check status of file, proceed if everything is ready
+            if(rawFile.readyState === 4 && rawFile.status === 200) {
+                allText     = rawFile.responseText.split("\n");
+                var arr1    = [];
+                allText.map(function(item){
+                    var tabs = item.split(",");
+                    arr1.push(tabs);
+                });
+                final_matrix = [];
+                // Specify whether array needs shuffling
+                if (shuffle === 1){
+                    trial_matrix = _.shuffle(arr1)
+                } else {
+                    trial_matrix = arr1;
+                }
 
-					};
+                console.log(trial_matrix);
+                }
+        };
+        rawFile.send(null);
+    };
 
-				colorspace =input;
-				//console.log(colorspace);
-				}
-			}
-		}
-		rawFile.send(null);
-	};
-
-	readTextFile("/static/Trial_Type.txt");
-	readColorSpace("/static/colorSpace.txt");
+    readTextFile2("/static/Trial_Type.txt",1);
+	// readTextFile2("/static/colorSpace.txt",0);
 
 	var wordon, // time search is presented
 	    listening = false;
@@ -192,7 +185,7 @@ var Practice1 = function() {
 	//console.log(condition);
 
 	var next = function() {
-		if (pracstims.length===0) {
+		if (pracstims.length === 0) {
 			var s = Snap('#svgMain');
 			s.clear();
 			clearTimeout(handle7);
