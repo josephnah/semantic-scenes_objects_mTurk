@@ -26,12 +26,10 @@ var pages = [
 var center_x = 1080 / 2;
 var center_y = 800 / 2;
 var fixation_width = 5;
-var s = Snap("#svgMain");
-
 psiTurk.preloadPages(pages);
-
+var s = Snap("#svgMain");
 var instructionPages = [ // add as a list as many pages as you like
-	"instructions/instruct-ready.html"  x
+	"instructions/instruct-ready.html"
 ];
 
 /*  Reads and shuffles (if necessary) text/csv file
@@ -61,6 +59,7 @@ readTextFile(trial_matrix_file, 1);
 // Common Stimuli used in experiment
 var show_fixation = function(){
     document.body.style.cursor = 'none';
+    var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
     var vertical = s.line(center_x-10, center_y, center_x+10, center_y);
     vertical.attr({
       id:"fix1",
@@ -78,6 +77,7 @@ var show_fixation = function(){
 
 var show_circle = function(){
     document.body.style.cursor = 'none';
+    var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
 	var bigCircle = s.circle(150, 150, 100);
 	// By default its black, lets change its attributes
 	bigCircle.attr({
@@ -88,7 +88,8 @@ var show_circle = function(){
 
 var show_square = function(){
     document.body.style.cursor = 'none';
-	var bigSquare = s.square(150, 150, 100);
+    var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
+	var bigSquare = s.ellipse(150, 150, 100, 20);
 	// By default its black, lets change its attributes
 	bigSquare.attr({
         fill: "#da2822",
@@ -97,7 +98,8 @@ var show_square = function(){
 };
 
 var show_SOA = function(){
-	s.clear();
+    var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
+    s.clear();
 };
 // console.log(trial_matrix);
 
@@ -120,14 +122,12 @@ var practice = function() {
 	var prac_trial_count = 0;
 
 	var next = function() {
+        var s = Snap("#svgMain");
+        s.clear();
 		if (prac_trial_count === prac_length) {
-			var s = Snap("svgMain");
-			s.clear();
 			clearTimeout();
-			finish;
+			finish();
 		} else {
-			var s = Snap("svgMain");
-			s.clear();
 			show_fixation();
 			clearTimeout();
 			handle01 = setTimeout(function(){
@@ -137,7 +137,20 @@ var practice = function() {
 			handle03 = setTimeout(function(){
 				show_square();}, 2500);
 		}
-	}
+	};
+
+	// var ITI = function(e){
+	// var s = Snap('#svgMain');
+	// s.clear();
+    //
+	// prac_trial_count ++;
+	// handle07 = setTimeout(function(){
+	// 		next()},500);
+    //
+	// };
+
+    // Load the stage.html snippet into the body of the page
+	psiTurk.showPage('stage.html');
 	next()
 
 };
