@@ -59,17 +59,17 @@ readTextFile(trial_matrix_file, 1);
 // Common Stimuli used in experiment
 var show_fixation = function(){
     document.body.style.cursor = 'none';
-    var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
-    var vertical = s.line(center_x-10, center_y, center_x+10, center_y);
-    vertical.attr({
+    this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
+    this.vertical = s.line(center_x-10, center_y, center_x+10, center_y);
+    this.vertical.attr({
       id:"fix1",
-      stroke: "red",
+      stroke: "#ffffff",
       strokeWidth: fixation_width
     });
-    var horizontal = s.line(center_x, center_y-10, center_x, center_y+10);
-    horizontal.attr({
+    this.horizontal = this.s.line(center_x, center_y-10, center_x, center_y+10);
+    this.horizontal.attr({
       id:"fix2",
-      stroke: "red",
+      stroke: "#ffffff",
       strokeWidth: fixation_width
     });
 
@@ -78,7 +78,19 @@ var show_fixation = function(){
 var show_circle = function(){
     document.body.style.cursor = 'none';
     var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
-	var bigCircle = s.circle(150, 150, 100);
+	this.vertical = s.line(center_x-10, center_y, center_x+10, center_y);
+    this.vertical.attr({
+      id:"fix1",
+      stroke: "#da2822",
+      strokeWidth: fixation_width
+    });
+    this.horizontal = this.s.line(center_x, center_y-10, center_x, center_y+10);
+    this.horizontal.attr({
+      id:"fix2",
+      stroke: "#da2822",
+      strokeWidth: fixation_width
+    });
+    var bigCircle = s.circle(150, 150, 100);
 	// By default its black, lets change its attributes
 	bigCircle.attr({
         fill: "#bada55",
@@ -86,21 +98,29 @@ var show_circle = function(){
     });
 };
 
-var show_square = function(){
+var show_ellipse = function(){
     document.body.style.cursor = 'none';
     var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
-	var bigSquare = s.ellipse(150, 150, 100, 20);
+	this.vertical = s.line(center_x-10, center_y, center_x+10, center_y);
+    this.vertical.attr({
+      id:"fix1",
+      stroke: "#ffffff",
+      strokeWidth: fixation_width
+    });
+    this.horizontal = this.s.line(center_x, center_y-10, center_x, center_y+10);
+    this.horizontal.attr({
+      id:"fix2",
+      stroke: "#ffffff",
+      strokeWidth: fixation_width
+    });
+    var ellipse = s.ellipse(150, 150, 100, 20);
 	// By default its black, lets change its attributes
-	bigSquare.attr({
+	ellipse.attr({
         fill: "#da2822",
         strokeWidth: 5
     });
 };
 
-var show_SOA = function(){
-    var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
-    s.clear();
-};
 // console.log(trial_matrix);
 
 /********************
@@ -120,7 +140,7 @@ var show_SOA = function(){
 var practice = function() {
 	prac_trials = trial_matrix.shift();
 	var prac_trial_count = 0;
-
+    console.log(prac_trial_count)
 	var next = function() {
         var s = Snap("#svgMain");
         s.clear();
@@ -130,24 +150,39 @@ var practice = function() {
 		} else {
 			show_fixation();
 			clearTimeout();
+
 			handle01 = setTimeout(function(){
 				show_circle();}, 500);
 			handle02 = setTimeout(function(){
-				show_SOA();}, 1000);
+				show_fixation();}, 1000);
 			handle03 = setTimeout(function(){
-				show_square();}, 2500);
+				show_ellipse();}, 2000);
+			handle04 = setTimeout(function(){
+			    show_SOA();},3000)
 		}
 	};
 
-	// var ITI = function(e){
-	// var s = Snap('#svgMain');
-	// s.clear();
-    //
-	// prac_trial_count ++;
-	// handle07 = setTimeout(function(){
-	// 		next()},500);
-    //
-	// };
+    var show_SOA = function(){
+		var s = Snap('#svgMain');
+		s.clear();
+		var horizontal = s.line(530,400,550,400);
+		horizontal.attr({
+		  id:"fix1",
+		  stroke: "white",
+		  strokeWidth:5
+		});
+		var vertical = s.line(540, 390, 540, 410);
+		vertical.attr({
+		  id:"fix2",
+		  stroke: "white",
+		  strokeWidth:5
+		});
+        prac_trial_count ++;
+		clearTimeout(handle04);
+
+		handle_fin = setTimeout(function(){
+		    next()},500);
+	};
 
     // Load the stage.html snippet into the body of the page
 	psiTurk.showPage('stage.html');
