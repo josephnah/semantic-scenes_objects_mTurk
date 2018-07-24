@@ -32,7 +32,7 @@ var instructionPages = [ // add as a list as many pages as you like
 	"instructions/instruct-ready.html"
 ];
 
-var stim_path = [
+var scene_path = [
     "static/images/scene-1.png",
     "static/images/scene-2.png",
     "static/images/scene-3.png",
@@ -40,6 +40,8 @@ var stim_path = [
     "static/images/scene-5.png"
 ];
 
+var scene_width = 400;
+var scene_height = 300;
 
 // General function that loads images.
 var Image = function Show_image(image_path, width, height, cx, cy) {
@@ -74,9 +76,6 @@ function readTextFile(file, shuffle){
     rawFile.send(null);
 };
 readTextFile(trial_matrix_file,1);
-
-
-
 // console.log(trial_matrix);
 
 /********************
@@ -95,6 +94,7 @@ readTextFile(trial_matrix_file,1);
 
 var practice = function() {
 	// pop off first row in trial matrix
+    document.body.style.cursor = 'none';
     console.log(trial_matrix);
     var prac_trial_count = 0;
     // count trial # of practice
@@ -104,29 +104,32 @@ var practice = function() {
         var s = Snap("#svgMain");
         s.clear();
         curr_loc = prac_trials[prac_trial_count][0];
-        console.log(curr_loc);
         // finish practice
         if (prac_trial_count === prac_length) {
 			clearTimeout();
 			finish();
 		} else {
-			fixation();
+            show_fixation_original();
 			clearTimeout();
 
 			handle01 = setTimeout(function(){
-				show_circle();}, 500);
+				show_fixation_red();}, 500); // Present this 500 ms after previous
 			handle02 = setTimeout(function(){
-				show_fixation();}, 1000);
+				show_scene();}, 1000);
 			handle03 = setTimeout(function(){
-				show_ellipse();}, 2000);
+				show_fixation_original();}, 2000);
 			handle04 = setTimeout(function(){
 			    show_SOA();},3000)
 		}
 	};
 
-    // Common Stimuli used in experiment
-    var show_fixation = function(){
-        document.body.style.cursor = 'none';
+    var finish = function() {
+		var s = Snap('#svgMain');
+		var between_prac = s.image("/static/images/AfterPrac.png", 0,200);
+	};
+
+    //* * Stimuli used in experiment, will repeat for practice and experiment for now
+    var show_fixation_original = function(){
         this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
         this.vertical = s.line(center_x-10, center_y, center_x+10, center_y);
         this.vertical.attr({
@@ -143,8 +146,7 @@ var practice = function() {
 
     };
 
-    var show_circle = function(){
-        document.body.style.cursor = 'none';
+    var show_fixation_red = function(){
         this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
         this.vertical = this.s.line(center_x-10, center_y, center_x+10, center_y);
         this.vertical.attr({
@@ -158,32 +160,14 @@ var practice = function() {
           stroke: "#da2822",
           strokeWidth: fixation_width
         });
-        this.scene = this.s.image(scenes[curr_loc],center_x, center_y, 100, 100);
         // this.scene.transform(str);
     };
 
-    var show_ellipse = function(){
-        document.body.style.cursor = 'none';
-        var s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
-        this.vertical = s.line(center_x-10, center_y, center_x+10, center_y);
-        this.vertical.attr({
-          id:"fix1",
-          stroke: "#ffffff",
-          strokeWidth: fixation_width
-        });
-        this.horizontal = this.s.line(center_x, center_y-10, center_x, center_y+10);
-        this.horizontal.attr({
-          id:"fix2",
-          stroke: "#ffffff",
-          strokeWidth: fixation_width
-        });
-        var ellipse = s.ellipse(150, 150, 100, 20);
-        // By default its black, lets change its attributes
-        ellipse.attr({
-            fill: "#da2822",
-            strokeWidth: 5
-        });
-    };
+    var show_scene = function() {
+        this.s = Snap("#svgMain");
+        this.scene = this.s.image(scene_path[prac_trial_count],center_x - scene_width/2, center_y - scene_height/2, scene_width, scene_height);
+    }
+
     var show_SOA = function(){
 		var s = Snap('#svgMain');
 		s.clear();
