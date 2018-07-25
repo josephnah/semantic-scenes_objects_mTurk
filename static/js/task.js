@@ -32,26 +32,37 @@ var instructionPages = [ // add as a list as many pages as you like
 	"instructions/instruct-ready.html"
 ];
 
+// will need to modify once scene exemplars are decided on
 var scene_path = [
-    "static/images/scene-1.png",
-    "static/images/scene-2.png",
-    "static/images/scene-3.png",
-    "static/images/scene-4.png",
-    "static/images/scene-5.png"
+    "static/images/scene/1.png",
+    "static/images/scene/2.png",
+    "static/images/scene/3.png",
+    "static/images/scene/4.png",
+    "static/images/scene/5.png"
 ];
+var scene_width     = 640;
+var scene_height    = 512;
 
-var scene_width = 400;
-var scene_height = 300;
+// object path defined in object presenting function
+var img_file_ext    = ".png"
+var object_width    = 150;
+var object_height   = 150;
+
+// Labels to make reading files easy
+var index_scene_category  = 0;
+var index_main_object     = 1;
+var index_other_object    = 2;
+var index_main_object_loc = 3;
 
 // General function that loads images.
-var Image = function Show_image(image_path, width, height, cx, cy) {
-    this.image_path = image_path;
-    this.width = width;
-    this.height = height;
-    this.cx = cx - (this.width/2);
-    this.cy = cy - (this.height/2);
-    this.image = s.image(image_path, this.cx, this.cy, this.width, this.height);
-};
+// var Image = function Show_image(image_path, width, height, cx, cy) {
+//     // this.image_path = image_path;
+//     this.width = width;
+//     this.height = height;
+//     this.cx = cx - (this.width/2);
+//     this.cy = cy - (this.height/2);
+//     this.image = s.image(image_path, this.cx, this.cy, this.width, this.height);
+// };
 
 
 /*  Reads and shuffles (if necessary) text/csv file
@@ -61,7 +72,7 @@ function readTextFile(file, shuffle){
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", file, true);
     rawFile.onreadystatechange = function (){
-        if(rawFile.readyState === 4 && rawFile.status === 200) {
+        if(rawFile.readyState == 4 && rawFile.status == 200) {
             console.log("ready to extract");
             allText = rawFile.responseText.split("\n");
             allText.map(function(item){
@@ -76,7 +87,7 @@ function readTextFile(file, shuffle){
     rawFile.send(null);
 };
 readTextFile(trial_matrix_file,1);
-// console.log(trial_matrix);
+console.log(trial_matrix);
 
 /********************
 * HTML manipulation
@@ -96,14 +107,19 @@ var practice = function() {
 	// pop off first row in trial matrix
     document.body.style.cursor = 'none';
     console.log(trial_matrix);
-    var prac_trial_count = 0;
     // count trial # of practice
+    var prac_trial_count = 0;
+    console.log(prac_trial_count);
+    /* information for practice trials
+       [x][y]
+       [x] = row
+       [y] = column     */
     prac_trials = trial_matrix;
+
     // function that dictates stimuli presentation order/duration
     var next = function() {
         var s = Snap("#svgMain");
         s.clear();
-        curr_loc = prac_trials[prac_trial_count][0];
         // finish practice
         if (prac_trial_count === prac_length) {
 			clearTimeout();
@@ -117,7 +133,7 @@ var practice = function() {
 			handle02 = setTimeout(function(){
 				show_scene();}, 1000);
 			handle03 = setTimeout(function(){
-				show_fixation_original();}, 2000);
+				show_objects();}, 2000);
 			handle04 = setTimeout(function(){
 			    show_SOA();},3000)
 		}
@@ -160,13 +176,49 @@ var practice = function() {
           stroke: "#da2822",
           strokeWidth: fixation_width
         });
-        // this.scene.transform(str);
     };
 
     var show_scene = function() {
         this.s = Snap("#svgMain");
-        this.scene = this.s.image(scene_path[prac_trial_count],center_x - scene_width/2, center_y - scene_height/2, scene_width, scene_height);
-    }
+        // this determines what the stimuli is, subtracting 1 for count issue difference (starts at 0)
+        this.scene_stim = scene_path[prac_trials[prac_trial_count][index_scene_category]-1];
+        this.scene = this.s.image(this.scene_stim, center_x - scene_width/2, center_y - scene_height/2, scene_width, scene_height);
+        this.vertical = this.s.line(center_x-10, center_y, center_x+10, center_y);
+        this.vertical.attr({
+          id:"fix1",
+          stroke: "#da2822",
+          strokeWidth: fixation_width
+        });
+        this.horizontal = this.s.line(center_x, center_y-10, center_x, center_y+10);
+        this.horizontal.attr({
+          id:"fix2",
+          stroke: "#da2822",
+          strokeWidth: fixation_width
+        });
+    };
+
+    var show_objects = function() {
+        this.s = Snap("#svgMain");
+        this.path = "static/images/objects/";
+        this.main_object_stim = [prac_trials[prac_trial_count][index_main_object]];
+        this.main_object_path = this.path.concat(this.main_object_stim, img_file_ext); // path to image
+        this.other_object_stim = [prac_trials[prac_trial_count][index_other_object]];
+        this.other_object_path = this.path.concat(this.other_object_stim, img_file_ext); // path to image
+        // console.log([prac_trials[prac_trial_count][index_main_object_loc]]);
+        if ([prac_trials[prac_trial_count][index_main_object_loc]] === [1]) {
+            this.main_object_location_x     = center_x - 200;
+            this.main_object_location_y     = center_y - object_height/2;
+            this.other_object_location_x    = center_x + 100;
+            this.other_object_location_y    = center_y - object_height/2;
+        } else {
+            this.main_object_location_x     = center_x + 100;
+            this.main_object_location_y     = center_y - object_height/2;
+            this.other_object_location_x    = center_x - 200;
+            this.other_object_location_y    = center_y - object_height/2;
+        }
+        this.main_object = this.s.image(this.main_object_path, this.main_object_location_x, this.main_object_location_y, object_width, object_height);
+        this.other_object = this.s.image(this.other_object_path, this.other_object_location_x, this.other_object_location_y, object_width, object_height);
+    };
 
     var show_SOA = function(){
 		var s = Snap('#svgMain');
