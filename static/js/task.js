@@ -22,9 +22,19 @@ var pages = [
 	"stage.html",
 	"postquestionnaire.html"
 ];
-// Variables for drawing images on screen
-var center_x = 1080 / 2;
-var center_y = 800 / 2;
+// sizes of images utilized in experiment
+var scene_size          = [640, 512];
+var object_size         = [150, 150];
+var gabor_size          = 50;
+var object_coordinate   = 200;
+
+// x, y Coordinates for stimuli positioning
+var center          = [1080/2, 800/2];
+var left_loc_object = [center[0] - object_size[0]/2 - object_coordinate, center[1] - object_size[1]/2];
+var rght_loc_object = [center[0] - object_size[0]/2 + object_coordinate, center[1] - object_size[1]/2];
+var left_loc_gabor  = [center[0] - gabor_size/2 + object_coordinate, center[1] - gabor_size/2];
+var left_loc_gabor  = [center[0] - gabor_size/2 + object_coordinate, center[1] - gabor_size/2];
+
 var fixation_width = 5;
 psiTurk.preloadPages(pages);
 var s = Snap("#svgMain");
@@ -40,13 +50,8 @@ var scene_path = [
     "static/images/scene/4.png",
     "static/images/scene/5.png"
 ];
-var scene_width     = 640;
-var scene_height    = 512;
-
 // object path defined in object presenting function
-var img_file_ext    = ".png"
-var object_width    = 150;
-var object_height   = 150;
+var img_file_ext    = ".png";
 
 // Labels to make reading files easy
 var index_scene_category  = 0;
@@ -72,7 +77,7 @@ function readTextFile(file, shuffle){
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", file, true);
     rawFile.onreadystatechange = function (){
-        if(rawFile.readyState == 4 && rawFile.status == 200) {
+        if(rawFile.readyState === 4 && rawFile.status === 200) {
             console.log("ready to extract");
             allText = rawFile.responseText.split("\n");
             allText.map(function(item){
@@ -135,7 +140,9 @@ var practice = function() {
 			handle03 = setTimeout(function(){
 				show_objects();}, 2000);
 			handle04 = setTimeout(function(){
-			    show_SOA();},3000)
+			    show_gabors();},2750);
+            handle05 = setTimeout(function(){
+			    show_SOA();},3000);
 		}
 	};
 
@@ -147,13 +154,13 @@ var practice = function() {
     //* * Stimuli used in experiment, will repeat for practice and experiment for now
     var show_fixation_original = function(){
         this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
-        this.vertical = s.line(center_x-10, center_y, center_x+10, center_y);
+        this.vertical = s.line(center[0]-10, center[1], center[0]+10, center[1]);
         this.vertical.attr({
           id:"fix1",
           stroke: "#ffffff",
           strokeWidth: fixation_width
         });
-        this.horizontal = this.s.line(center_x, center_y-10, center_x, center_y+10);
+        this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
         this.horizontal.attr({
           id:"fix2",
           stroke: "#ffffff",
@@ -164,13 +171,13 @@ var practice = function() {
 
     var show_fixation_red = function(){
         this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
-        this.vertical = this.s.line(center_x-10, center_y, center_x+10, center_y);
+        this.vertical = this.s.line(center[0]-10, center[1], center[0]+10, center[1]);
         this.vertical.attr({
           id:"fix1",
           stroke: "#da2822",
           strokeWidth: fixation_width
         });
-        this.horizontal = this.s.line(center_x, center_y-10, center_x, center_y+10);
+        this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
         this.horizontal.attr({
           id:"fix2",
           stroke: "#da2822",
@@ -182,14 +189,14 @@ var practice = function() {
         this.s = Snap("#svgMain");
         // this determines what the stimuli is, subtracting 1 for count issue difference (starts at 0)
         this.scene_stim = scene_path[prac_trials[prac_trial_count][index_scene_category]-1];
-        this.scene = this.s.image(this.scene_stim, center_x - scene_width/2, center_y - scene_height/2, scene_width, scene_height);
-        this.vertical = this.s.line(center_x-10, center_y, center_x+10, center_y);
+        this.scene = this.s.image(this.scene_stim, center[0] - scene_size[0]/2, center[1] - scene_size[1]/2, scene_size[0], scene_size[1]);
+        this.vertical = this.s.line(center[0]-10, center[1], center[0]+10, center[1]);
         this.vertical.attr({
           id:"fix1",
           stroke: "#da2822",
           strokeWidth: fixation_width
         });
-        this.horizontal = this.s.line(center_x, center_y-10, center_x, center_y+10);
+        this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
         this.horizontal.attr({
           id:"fix2",
           stroke: "#da2822",
@@ -200,24 +207,49 @@ var practice = function() {
     var show_objects = function() {
         this.s = Snap("#svgMain");
         this.path = "static/images/objects/";
-        this.main_object_stim = [prac_trials[prac_trial_count][index_main_object]];
-        this.main_object_path = this.path.concat(this.main_object_stim, img_file_ext); // path to image
-        this.other_object_stim = [prac_trials[prac_trial_count][index_other_object]];
-        this.other_object_path = this.path.concat(this.other_object_stim, img_file_ext); // path to image
-        // console.log([prac_trials[prac_trial_count][index_main_object_loc]]);
+
+        this.main_object_stim   = [prac_trials[prac_trial_count][index_main_object]];
+        this.other_object_stim  = [prac_trials[prac_trial_count][index_other_object]];
+        this.main_object_path   = this.path.concat(this.main_object_stim, img_file_ext); // path to image
+        this.other_object_path  = this.path.concat(this.other_object_stim, img_file_ext); // path to image
+
         if ([prac_trials[prac_trial_count][index_main_object_loc]] === [1]) {
-            this.main_object_location_x     = center_x - 200;
-            this.main_object_location_y     = center_y - object_height/2;
-            this.other_object_location_x    = center_x + 100;
-            this.other_object_location_y    = center_y - object_height/2;
+            this.main_object_location_x     = left_loc_object[0];
+            this.main_object_location_y     = left_loc_object[1];
+            this.other_object_location_x    = rght_loc_object[0];
+            this.other_object_location_y    = rght_loc_object[1];
         } else {
-            this.main_object_location_x     = center_x + 100;
-            this.main_object_location_y     = center_y - object_height/2;
-            this.other_object_location_x    = center_x - 200;
-            this.other_object_location_y    = center_y - object_height/2;
-        }
-        this.main_object = this.s.image(this.main_object_path, this.main_object_location_x, this.main_object_location_y, object_width, object_height);
-        this.other_object = this.s.image(this.other_object_path, this.other_object_location_x, this.other_object_location_y, object_width, object_height);
+            this.main_object_location_x     = rght_loc_object[0];
+            this.main_object_location_y     = rght_loc_object[1];
+            this.other_object_location_x    = left_loc_object[0];
+            this.other_object_location_y    = left_loc_object[1];
+        };
+
+        this.main_object    = this.s.image(this.main_object_path, this.main_object_location_x, this.main_object_location_y, object_size[0], object_size[1]);
+        this.other_object   = this.s.image(this.other_object_path, this.other_object_location_x, this.other_object_location_y, object_size[0], object_size[1]);
+    };
+
+    var show_gabors = function() {
+        this.s = Snap("#svgMain");
+        this.gabor = this.s.image("static/images/gabors/gabor01.png", left_loc_gabor[0], left_loc_gabor[1], 50, 50);
+
+        // Determine the orientation of target gabor
+        var orient_match = Math.random();
+        if (orient_match < .5) {
+            var target_ori = -45;
+        } else {
+            var target_ori = 45;
+        };
+
+        // Determine whether gabor orientations match
+        var match_determine = Math.random();
+        if (match_determine < .5) {
+            var match = 1;
+            var center_ori = target_ori;
+        } else {
+            var match = 0;
+            var center_ori = -target_ori;
+        };
     };
 
     var show_SOA = function(){
