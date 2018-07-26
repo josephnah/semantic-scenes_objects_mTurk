@@ -25,19 +25,21 @@ var pages = [
 // sizes of images utilized in experiment
 var scene_size          = [640, 512];
 var object_size         = [150, 150];
-var gabor_size          = 50;
+var target_gabor_size   = 50;
+var center_gabor_size   = 20;
 var object_coordinate   = 200;
 
 // x, y Coordinates for stimuli positioning
-var center          = [1080/2, 800/2];
-var left_loc_object = [center[0] - object_size[0]/2 - object_coordinate, center[1] - object_size[1]/2];
-var rght_loc_object = [center[0] - object_size[0]/2 + object_coordinate, center[1] - object_size[1]/2];
-var left_loc_gabor  = [center[0] - gabor_size/2 + object_coordinate, center[1] - gabor_size/2];
-var left_loc_gabor  = [center[0] - gabor_size/2 + object_coordinate, center[1] - gabor_size/2];
-
+var center              = [1080/2, 800/2];
+var left_loc_object     = [center[0] - object_size[0]/2 - object_coordinate, center[1] - object_size[1]/2];
+var right_loc_object    = [center[0] - object_size[0]/2 + object_coordinate, center[1] - object_size[1]/2];
+var left_loc_gabor      = [center[0] - target_gabor_size/2 - object_coordinate, center[1] - target_gabor_size/2];
+var right_loc_gabor     = [center[0] - target_gabor_size/2 + object_coordinate, center[1] - target_gabor_size/2];
+var center_loc_gabor    = [center[0] - center_gabor_size/2, center[1] - center_gabor_size/2];
 var fixation_width = 5;
+
 psiTurk.preloadPages(pages);
-var s = Snap("#svgMain");
+
 var instructionPages = [ // add as a list as many pages as you like
 	"instructions/instruct-ready.html"
 ];
@@ -50,6 +52,7 @@ var scene_path = [
     "static/images/scene/4.png",
     "static/images/scene/5.png"
 ];
+
 // object path defined in object presenting function
 var img_file_ext    = ".png";
 
@@ -140,7 +143,7 @@ var practice = function() {
 			handle03 = setTimeout(function(){
 				show_objects();}, 2000);
 			handle04 = setTimeout(function(){
-			    show_gabors();},2750);
+			    show_gabors();},2100);
             handle05 = setTimeout(function(){
 			    show_SOA();},3000);
 		}
@@ -206,21 +209,20 @@ var practice = function() {
 
     var show_objects = function() {
         this.s = Snap("#svgMain");
-        this.path = "static/images/objects/";
 
         this.main_object_stim   = [prac_trials[prac_trial_count][index_main_object]];
         this.other_object_stim  = [prac_trials[prac_trial_count][index_other_object]];
-        this.main_object_path   = this.path.concat(this.main_object_stim, img_file_ext); // path to image
-        this.other_object_path  = this.path.concat(this.other_object_stim, img_file_ext); // path to image
+        this.main_object_path   = "static/images/objects/" + this.main_object_stim + img_file_ext; // path to image
+        this.other_object_path  = "static/images/objects/" + this.other_object_stim + img_file_ext; // path to image
 
         if ([prac_trials[prac_trial_count][index_main_object_loc]] === [1]) {
             this.main_object_location_x     = left_loc_object[0];
             this.main_object_location_y     = left_loc_object[1];
-            this.other_object_location_x    = rght_loc_object[0];
-            this.other_object_location_y    = rght_loc_object[1];
+            this.other_object_location_x    = right_loc_object[0];
+            this.other_object_location_y    = right_loc_object[1];
         } else {
-            this.main_object_location_x     = rght_loc_object[0];
-            this.main_object_location_y     = rght_loc_object[1];
+            this.main_object_location_x     = right_loc_object[0];
+            this.main_object_location_y     = right_loc_object[1];
             this.other_object_location_x    = left_loc_object[0];
             this.other_object_location_y    = left_loc_object[1];
         };
@@ -231,7 +233,6 @@ var practice = function() {
 
     var show_gabors = function() {
         this.s = Snap("#svgMain");
-        this.gabor = this.s.image("static/images/gabors/gabor01.png", left_loc_gabor[0], left_loc_gabor[1], 50, 50);
 
         // Determine the orientation of target gabor
         var orient_match = Math.random();
@@ -239,7 +240,7 @@ var practice = function() {
             var target_ori = -45;
         } else {
             var target_ori = 45;
-        };
+        }
 
         // Determine whether gabor orientations match
         var match_determine = Math.random();
@@ -250,6 +251,12 @@ var practice = function() {
             var match = 0;
             var center_ori = -target_ori;
         };
+        this.target_gabor = this.s.image("static/images/gabors/gabor02.png", left_loc_gabor[0], left_loc_gabor[1], 50, 50);
+        this.center_gabor = this.s.image("static/images/gabors/gabor01.png", center_loc_gabor[0], center_loc_gabor[1], 20, 20);
+        // rotates gabor patch
+        this.target_gabor.transform("t"+parseInt(target_ori));
+        this.center_gabor.transform("t"+parseInt(center_ori));
+
     };
 
     var show_SOA = function(){
@@ -269,7 +276,8 @@ var practice = function() {
 		});
         prac_trial_count ++;
         // console.log(prac_trial_count)
-		clearTimeout(handle04);
+		clearTimeout(handle05);
+		// clearTimeout();
 
 		handle_fin = setTimeout(function(){
 		    next()},500);
