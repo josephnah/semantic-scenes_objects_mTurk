@@ -25,15 +25,15 @@ var pages = [
 // sizes of images utilized in experiment
 var screen_size         = [1080, 800];
 var scene_size          = [640, 512];
-var object_size         = [150, 150];
+var object_size         = 150;
 var target_gabor_size   = 50;
 var center_gabor_size   = 20;
 var object_coordinate   = 200;
 
 // x, y Coordinates for stimuli positioning
 var center              = [screen_size[0]/2, screen_size[1]/2];
-var left_loc_object     = [center[0] - object_size[0]/2 - object_coordinate, center[1] - object_size[1]/2];
-var right_loc_object    = [center[0] - object_size[0]/2 + object_coordinate, center[1] - object_size[1]/2];
+var left_loc_object     = [center[0] - object_size/2 - object_coordinate, center[1] - object_size/2];
+var right_loc_object    = [center[0] - object_size/2 + object_coordinate, center[1] - object_size/2];
 var left_loc_gabor      = [center[0] - target_gabor_size/2 - object_coordinate, center[1] - target_gabor_size/2];
 var right_loc_gabor     = [center[0] - target_gabor_size/2 + object_coordinate, center[1] - target_gabor_size/2];
 var center_loc_gabor    = [center[0] - center_gabor_size/2, center[1] - center_gabor_size/2];
@@ -45,24 +45,16 @@ var instructionPages = [ // add as a list as many pages as you like
 	"instructions/instruct-ready.html"
 ];
 
-// will need to modify once scene exemplars are decided on
-var scene_path = [
-    "static/images/scene/1.png",
-    "static/images/scene/2.png",
-    "static/images/scene/3.png",
-    "static/images/scene/4.png",
-    "static/images/scene/5.png"
-];
-
 // object path defined in object presenting function
 var img_file_ext    = ".png";
 
 // Labels to make reading files easy
 var index_scene_category    = 0;
-var index_main_object       = 1;
-var index_other_object      = 2;
-var index_main_object_loc   = 3;
-var index_target_loc        = 4;
+var index_scene_exemplar    = 1;
+var index_main_object       = 2;
+var index_other_object      = 3;
+var index_main_object_loc   = 4; // should this be random? 2018-07-29
+var index_target_loc        = 5;
 
 // Presentation time
 var ITI                     = 500;
@@ -81,6 +73,21 @@ var get_response_time       = 2000;
 //     this.image = s.image(image_path, this.cx, this.cy, this.width, this.height);
 // };
 
+var show_fixation = function(){
+    this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
+    this.vertical = this.s.line(center[0]-10, center[1], center[0]+10, center[1]);
+    this.vertical.attr({
+      id:"fix1",
+      stroke: "#ffffff",
+      strokeWidth: fixation_width
+    });
+    this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
+    this.horizontal.attr({
+      id:"fix2",
+      stroke: "#ffffff",
+      strokeWidth: fixation_width
+    });
+};
 
 /*  Reads and shuffles (if necessary) text/csv file
 	and stores in array for experiment
@@ -125,6 +132,11 @@ var practice = function() {
 
     // count trial # of practice
     var prac_trial_count = 0;
+    // randomization for gabor orientations & orientation match
+    var orient_match = Math.random();
+    var match_determine = Math.random();
+    var match;
+    var target_ori;
     // information for practice trials [x = row][y = column]
     prac_trials = trial_matrix;
 
@@ -137,6 +149,8 @@ var practice = function() {
 			clearTimeout();
 			finish();
 		} else {
+            document.removeEventListener("keypress", get_response, false); // Just in case
+
             show_fixation();
 			// clearTimeout(); NOT sure if this is needed
 
@@ -154,44 +168,17 @@ var practice = function() {
 
     var finish = function() {
 		var s = Snap('#svgMain');
-		var after_prac = s.image("/static/images/AfterPrac.png", 0,200);
+		this.s.image("/static/images/AfterPrac.png", 0,200);
 	};
 
     //* * Stimuli used in experiment, will repeat for practice and experiment for now
 
-    var show_fixation = function(){
-        this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
-        this.vertical = this.s.line(center[0]-10, center[1], center[0]+10, center[1]);
-        this.vertical.attr({
-          id:"fix1",
-          stroke: "#ffffff",
-          strokeWidth: fixation_width
-        });
-        this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
-        this.horizontal.attr({
-          id:"fix2",
-          stroke: "#ffffff",
-          strokeWidth: fixation_width
-        });
-    };
-
     var show_scene = function() {
         this.s = Snap("#svgMain");
         // this determines what the stimuli is, subtracting 1 for count issue difference (starts at 0)
-        this.scene_stim = scene_path[prac_trials[prac_trial_count][index_scene_category]-1];
+        this.scene_stim = "static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext;
         this.scene = this.s.image(this.scene_stim, center[0] - scene_size[0]/2, center[1] - scene_size[1]/2, scene_size[0], scene_size[1]);
-        this.vertical = this.s.line(center[0]-10, center[1], center[0]+10, center[1]);
-        this.vertical.attr({
-          id:"fix1",
-          stroke: "#ffffff",
-          strokeWidth: fixation_width
-        });
-        this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
-        this.horizontal.attr({
-          id:"fix2",
-          stroke: "#ffffff",
-          strokeWidth: fixation_width
-        });
+        show_fixation();
     };
 
     var show_objects = function() {
@@ -214,31 +201,29 @@ var practice = function() {
             this.other_object_location_y    = left_loc_object[1];
         }
 
-        this.main_object    = this.s.image(this.main_object_path, this.main_object_location_x, this.main_object_location_y, object_size[0], object_size[1]);
-        this.other_object   = this.s.image(this.other_object_path, this.other_object_location_x, this.other_object_location_y, object_size[0], object_size[1]);
+        this.s.image(this.main_object_path, this.main_object_location_x, this.main_object_location_y, object_size[0], object_size[1]);
+        this.s.image(this.other_object_path, this.other_object_location_x, this.other_object_location_y, object_size[0], object_size[1]);
     };
 
     var show_gabors = function() {
         this.s = Snap("#svgMain");
-
+        gabor_onset = new Date().getTime();
         // Determine the orientation of target gabor
-        var orient_match = Math.random();
         if (orient_match < .5) {
-            var target_ori = -45;
+            target_ori = -45;
         } else {
-            var target_ori = 45;
+            target_ori = 45;
         }
 
         // Determine whether gabor orientations match
-        var match_determine = Math.random();
         if (match_determine < .5) {
-            var match = 1;
+            match = 1;
             var center_ori = target_ori;
         } else {
-            var match = 0;
+            match = 0;
             var center_ori = -target_ori;
         };
-
+        console.log(match);
         if (parseInt([prac_trials[prac_trial_count][index_target_loc]]) === 1) {
             this.gabor_location = left_loc_gabor
         } else {
@@ -252,69 +237,53 @@ var practice = function() {
 
     };
 
-    // var get_response = function (e) {
-    //     if (e.charCode === 102 || e.charCode === 106) { // 102f 106j
-    //         clearTimeout();
-    //         resp = 1;
-    //         if (e.charCode === 102 & match === 1) {
-    //             acc = 1;
-    //         } else if (e.charCode === 106 & match === 2) {
-    //             acc = 1;
-    //         }
-    //         } else {
-    //
-    //     }
-    //
-    //     } else {
-    //         resp = 0;
-    //     }}
-    // };
-
     var show_SOA = function(){
         this.s = Snap("#svgMain");
-        this.scene_stim = scene_path[prac_trials[prac_trial_count][index_scene_category]-1];
-        this.scene = this.s.image(this.scene_stim, center[0] - scene_size[0]/2, center[1] - scene_size[1]/2, scene_size[0], scene_size[1]);
-        this.main_object_stim   = [prac_trials[prac_trial_count][index_main_object]];
-        this.other_object_stim  = [prac_trials[prac_trial_count][index_other_object]];
-        this.main_object_path   = "static/images/objects/" + this.main_object_stim + img_file_ext; // path to image
-        this.other_object_path  = "static/images/objects/" + this.other_object_stim + img_file_ext; // path to image
+        show_scene();
+        show_objects();
+        show_fixation();
 
-        if (parseInt([prac_trials[prac_trial_count][index_main_object_loc]]) === 1) {
-            this.main_object_location_x     = left_loc_object[0];
-            this.main_object_location_y     = left_loc_object[1];
-            this.other_object_location_x    = right_loc_object[0];
-            this.other_object_location_y    = right_loc_object[1];
-        } else {
-            this.main_object_location_x     = right_loc_object[0];
-            this.main_object_location_y     = right_loc_object[1];
-            this.other_object_location_x    = left_loc_object[0];
-            this.other_object_location_y    = left_loc_object[1];
-        }
-
-        this.main_object    = this.s.image(this.main_object_path, this.main_object_location_x, this.main_object_location_y, object_size[0], object_size[1]);
-        this.other_object   = this.s.image(this.other_object_path, this.other_object_location_x, this.other_object_location_y, object_size[0], object_size[1]);
-
-        this.vertical = this.s.line(center[0]-10, center[1], center[0]+10, center[1]);
-        this.vertical.attr({
-          id:"fix1",
-          stroke: "#ffffff",
-          strokeWidth: fixation_width
-        });
-        this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
-        this.horizontal.attr({
-          id:"fix2",
-          stroke: "#ffffff",
-          strokeWidth: fixation_width
-        });
-
+        document.addEventListener("keypress", get_response, false);
         prac_trial_count ++;
-        // console.log(prac_trial_count)
-		clearTimeout(handle05);
-		// clearTimeout();
+        console.log(prac_trial_count);
+		clearTimeout(show_gabors);
 
 		handle_fin = setTimeout(function(){
 		    next()}, get_response_time);
 	};
+
+    var get_response = function (e) {
+        if (e.charCode === 102 || e.charCode === 106) { // 102f 106j
+            clearTimeout();
+            var RT = new Date().getTime() - gabor_onset; // Get RT
+            document.removeEventListener("keypress", get_response, false);
+            resp = 1;
+            console.log("keyPressed= " + e.charCode, "resp:" + resp);
+
+            if (e.charCode === 102 & match === 1) {
+                acc = 1;
+            } else if (e.charCode === 106 & match === 2) {
+                acc = 1;
+            } else {
+                acc = 0;
+            }
+
+        } else {
+            resp = 0;
+
+        }
+        psiTurk.recordTrialData({"phase": "PRACTICE",
+            "trial": prac_trial_count,
+            "match" : match,
+            "target_ori": target_ori,
+            "target_location": [prac_trials[prac_trial_count][index_target_loc]],
+            "scene_type": [prac_trials[prac_trial_count][index_scene_category]]
+            // "scene_exemplar": null,
+
+
+
+        })
+    };
 
     // Load the stage.html snippet into the body of the page
 	psiTurk.showPage('stage.html');
