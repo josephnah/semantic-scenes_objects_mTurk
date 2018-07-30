@@ -89,6 +89,11 @@ var show_fixation = function(){
     });
 };
 
+var show_scene_test = function(scene_source) {
+    this.s = Snap("#svgMain");
+    this.scene = this.s.image(scene_source, center[0] - scene_size[0]/2, center[1] - scene_size[1]/2, scene_size[0], scene_size[1]);
+    show_fixation();
+};
 /*  Reads and shuffles (if necessary) text/csv file
 	and stores in array for experiment
 	modified by joecool890 on 2018-06-09 */
@@ -161,7 +166,7 @@ var practice = function() {
 				show_objects();}, ITI + scene_display_time);
 			disp_targets = setTimeout(function(){
 			    show_gabors();}, ITI + scene_display_time + object_display_time);
-            handle05 = setTimeout(function(){
+            disp_response = setTimeout(function(){
 			    show_SOA();}, ITI + scene_display_time + object_display_time + gabor_display_time);
 		}
 	};
@@ -222,7 +227,7 @@ var practice = function() {
         } else {
             match = 0;
             var center_ori = -target_ori;
-        };
+        }
         console.log(match);
         if (parseInt([prac_trials[prac_trial_count][index_target_loc]]) === 1) {
             this.gabor_location = left_loc_gabor
@@ -244,6 +249,7 @@ var practice = function() {
         show_fixation();
 
         document.addEventListener("keypress", get_response, false);
+
         prac_trial_count ++;
         console.log(prac_trial_count);
 		clearTimeout(show_gabors);
@@ -253,12 +259,11 @@ var practice = function() {
 	};
 
     var get_response = function (e) {
-        if (e.charCode === 102 || e.charCode === 106) { // 102f 106j
-            clearTimeout();
+        if (e.charCode === 102 || e.charCode === 106) { // 102 = f 106 = j
+
             var RT = new Date().getTime() - gabor_onset; // Get RT
             document.removeEventListener("keypress", get_response, false);
             resp = 1;
-            console.log("keyPressed= " + e.charCode, "resp:" + resp);
 
             if (e.charCode === 102 & match === 1) {
                 acc = 1;
@@ -267,28 +272,38 @@ var practice = function() {
             } else {
                 acc = 0;
             }
+            console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT);
+            next();
 
         } else {
             resp = 0;
+            // disp_plz_respond();
 
         }
-        psiTurk.recordTrialData({"phase": "PRACTICE",
-            "trial": prac_trial_count,
-            "match" : match,
-            "target_ori": target_ori,
-            "target_location": [prac_trials[prac_trial_count][index_target_loc]],
-            "scene_type": [prac_trials[prac_trial_count][index_scene_category]]
-            // "scene_exemplar": null,
-
-
-
-        })
+        // psiTurk.recordTrialData({"phase": "PRACTICE",
+        //     "trial": prac_trial_count,
+        //     "match" : match,
+        //     "target_ori": target_ori,
+        //     "target_location": [prac_trials[prac_trial_count][index_target_loc]],
+        //     "scene_type": [prac_trials[prac_trial_count][index_scene_category]]
+        //     // "scene_exemplar": null,
+        //
+        //
+        //
+        // });
+        // document.addEventListener("keypress", show_scene(), false);
     };
+    // var disp_plz_respond = function() {
+    //     this.s = Snap("#svgMain");
+    //     show_fixation_red();
+    //     handle_fin = setTimeout(function(){
+		//     next()}, ITI + scene_display_time + object_display_time + gabor_display_time + get_response_time);
+    // };
 
     // Load the stage.html snippet into the body of the page
 	psiTurk.showPage('stage.html');
 
-	next()
+	next();
 
 };
 
