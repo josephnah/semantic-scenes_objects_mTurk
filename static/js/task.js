@@ -27,7 +27,7 @@ var screen_size         = [1080, 800];
 var scene_size          = [640, 512];
 var object_size         = 150;
 var target_gabor_size   = 50;
-var center_gabor_size   = 20;
+var center_gabor_size   = 30;
 var object_coordinate   = 200;
 
 // x, y Coordinates for stimuli positioning
@@ -57,43 +57,30 @@ var index_main_object_loc   = 4; // should this be random? 2018-07-29
 var index_target_loc        = 5;
 
 // Presentation time
-var ITI                     = 500;
+var ITI_time                = 500;
 var scene_display_time      = 1000;
 var object_display_time     = 750;
 var gabor_display_time      = 200;
 var get_response_time       = 2000;
 
-// General function that loads images.
-// var Image = function Show_image(image_path, width, height, cx, cy) {
-//     // this.image_path = image_path;
-//     this.width = width;
-//     this.height = height;
-//     this.cx = cx - (this.width/2);
-//     this.cy = cy - (this.height/2);
-//     this.image = s.image(image_path, this.cx, this.cy, this.width, this.height);
-// };
-
 var show_fixation = function(){
     this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
     this.vertical = this.s.line(center[0]-10, center[1], center[0]+10, center[1]);
-    this.vertical.attr({
+    this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
+    this.fixation = s.group(this.vertical, this.horizontal);
+    this.fixation.attr({
       id:"fix1",
       stroke: "#ffffff",
       strokeWidth: fixation_width
     });
-    this.horizontal = this.s.line(center[0], center[1]-10, center[0], center[1]+10);
-    this.horizontal.attr({
-      id:"fix2",
-      stroke: "#ffffff",
-      strokeWidth: fixation_width
-    });
 };
 
-var show_scene_test = function(scene_source) {
+var show_scene = function(scene_source) {
     this.s = Snap("#svgMain");
     this.scene = this.s.image(scene_source, center[0] - scene_size[0]/2, center[1] - scene_size[1]/2, scene_size[0], scene_size[1]);
     show_fixation();
 };
+
 /*  Reads and shuffles (if necessary) text/csv file
 	and stores in array for experiment
 	modified by joecool890 on 2018-06-09 */
@@ -102,7 +89,7 @@ function readTextFile(file, shuffle){
     rawFile.open("GET", file, true);
     rawFile.onreadystatechange = function (){
         if(rawFile.readyState === 4 && rawFile.status === 200) {
-            console.log("ready to extract");
+            // console.log("ready to extract");
             allText = rawFile.responseText.split("\n");
             allText.map(function(item){
                 var tabs = item.split(",");
@@ -137,8 +124,9 @@ var practice = function() {
 
     // count trial # of practice
     var prac_trial_count = 0;
+    // console.log("start of trial:" + prac_trial_count);
     // randomization for gabor orientations & orientation match
-    var orient_match = Math.random();
+    var orient_match    = Math.random();
     var match_determine = Math.random();
     var match;
     var target_ori;
@@ -157,17 +145,18 @@ var practice = function() {
             document.removeEventListener("keypress", get_response, false); // Just in case
 
             show_fixation();
-			// clearTimeout(); NOT sure if this is needed
+			clearTimeout(); //NOT sure if this is needed
 
             // setTimeout function activates AFTER inputted time
 			disp_scene = setTimeout(function(){
-				show_scene();}, ITI);
+				show_scene("static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext);}, ITI_time);
+			    // show_scene();}, ITI_time);
 			disp_objects = setTimeout(function(){
-				show_objects();}, ITI + scene_display_time);
+				show_objects();}, ITI_time + scene_display_time);
 			disp_targets = setTimeout(function(){
-			    show_gabors();}, ITI + scene_display_time + object_display_time);
+			    show_gabors();}, ITI_time + scene_display_time + object_display_time);
             disp_response = setTimeout(function(){
-			    show_SOA();}, ITI + scene_display_time + object_display_time + gabor_display_time);
+			    show_SOA();}, ITI_time + scene_display_time + object_display_time + gabor_display_time);
 		}
 	};
 
@@ -175,16 +164,6 @@ var practice = function() {
 		var s = Snap('#svgMain');
 		this.s.image("/static/images/AfterPrac.png", 0,200);
 	};
-
-    //* * Stimuli used in experiment, will repeat for practice and experiment for now
-
-    var show_scene = function() {
-        this.s = Snap("#svgMain");
-        // this determines what the stimuli is, subtracting 1 for count issue difference (starts at 0)
-        this.scene_stim = "static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext;
-        this.scene = this.s.image(this.scene_stim, center[0] - scene_size[0]/2, center[1] - scene_size[1]/2, scene_size[0], scene_size[1]);
-        show_fixation();
-    };
 
     var show_objects = function() {
         this.s = Snap("#svgMain");
@@ -228,42 +207,41 @@ var practice = function() {
             match = 0;
             var center_ori = -target_ori;
         }
-        console.log(match);
+        // console.log(match);
         if (parseInt([prac_trials[prac_trial_count][index_target_loc]]) === 1) {
             this.gabor_location = left_loc_gabor
         } else {
             this.gabor_location = right_loc_gabor
         }
-        this.target_gabor = this.s.image("static/images/gabors/gabor02.png", this.gabor_location[0], this.gabor_location[1], 50, 50);
-        this.center_gabor = this.s.image("static/images/gabors/gabor01.png", center_loc_gabor[0],center_loc_gabor[1], 20, 20);
+        this.target_gabor = this.s.image("static/images/gabors/gabor02.png", this.gabor_location[0], this.gabor_location[1], target_gabor_size, target_gabor_size);
+        this.center_gabor = this.s.image("static/images/gabors/gabor01.png", center_loc_gabor[0],center_loc_gabor[1], center_gabor_size, center_gabor_size);
         // rotates gabor patch
         this.target_gabor.transform("r"+parseInt(target_ori));
         this.center_gabor.transform("r"+parseInt(center_ori));
 
     };
-
+    // need to figure out how to exit this when no keypress
     var show_SOA = function(){
         this.s = Snap("#svgMain");
-        show_scene();
+        show_scene("static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext);
         show_objects();
         show_fixation();
 
         document.addEventListener("keypress", get_response, false);
 
         prac_trial_count ++;
-        console.log(prac_trial_count);
+        // console.log("end of trial:" + prac_trial_count);
 		clearTimeout(show_gabors);
-
-		handle_fin = setTimeout(function(){
-		    next()}, get_response_time);
 	};
 
+    // need to restrict key press to f and j
     var get_response = function (e) {
         if (e.charCode === 102 || e.charCode === 106) { // 102 = f 106 = j
 
             var RT = new Date().getTime() - gabor_onset; // Get RT
             document.removeEventListener("keypress", get_response, false);
             resp = 1;
+
 
             if (e.charCode === 102 & match === 1) {
                 acc = 1;
@@ -273,11 +251,30 @@ var practice = function() {
                 acc = 0;
             }
             console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT);
-            next();
+
+            var ITI = function(){
+                this.s = Snap("#svgMain");
+                s.clear();
+                if (acc === 1) {
+                    show_fixation();
+                } else if (acc === 0) {
+                    show_fixation();
+                    this.fixation.attr({
+                        stroke: "#da2822"
+                    });
+                }
+                handle_fin = setTimeout(function(){
+                    next()}, 500);
+            };
+            ITI();
 
         } else {
-            resp = 0;
-            // disp_plz_respond();
+            console.log("wrong fucking key");
+            resp    = 0;
+            acc     = 99;
+            handle_fin = setTimeout(function(){
+                disp_plz_respond()}, 100);
+
 
         }
         // psiTurk.recordTrialData({"phase": "PRACTICE",
@@ -293,12 +290,15 @@ var practice = function() {
         // });
         // document.addEventListener("keypress", show_scene(), false);
     };
-    // var disp_plz_respond = function() {
-    //     this.s = Snap("#svgMain");
-    //     show_fixation_red();
-    //     handle_fin = setTimeout(function(){
-		//     next()}, ITI + scene_display_time + object_display_time + gabor_display_time + get_response_time);
-    // };
+
+    var disp_plz_respond = function() {
+        this.s = Snap("#svgMain");
+        s.clear();
+        show_fixation();
+
+        handle_fin = setTimeout(function(){
+		    next()}, 1000);
+    };
 
     // Load the stage.html snippet into the body of the page
 	psiTurk.showPage('stage.html');
@@ -309,6 +309,7 @@ var practice = function() {
 
 // Task object to keep track of the current phase
 var currentview;
+
 /*******************
  * Run Task
  ******************/
