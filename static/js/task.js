@@ -163,7 +163,15 @@ var practice = function() {
     var finish = function() {
 		var s = Snap('#svgMain');
 		this.s.image("/static/images/AfterPrac.png", 0,200);
+		document.addEventListener("keydown",to_questionnaire, false);
 	};
+
+    var to_questionnaire = function(e){
+        if (e.keyCode == 32) {
+            document.removeEventListener("keydown",to_questionnaire,false);
+            currentview = new Questionnaire();
+        }
+    };
 
     var show_objects = function() {
         this.s = Snap("#svgMain");
@@ -277,17 +285,16 @@ var practice = function() {
 
 
         }
-        // psiTurk.recordTrialData({"phase": "PRACTICE",
-        //     "trial": prac_trial_count,
-        //     "match" : match,
-        //     "target_ori": target_ori,
-        //     "target_location": [prac_trials[prac_trial_count][index_target_loc]],
-        //     "scene_type": [prac_trials[prac_trial_count][index_scene_category]]
-        //     // "scene_exemplar": null,
-        //
-        //
-        //
-        // });
+        psiTurk.recordTrialData({"phase": "PRACTICE",
+            "trial": prac_trial_count,
+            "match" : match,
+            "target_ori": target_ori,
+            "target_location": [prac_trials[prac_trial_count][index_target_loc]],
+            "scene_type": [prac_trials[prac_trial_count][index_scene_category]],
+            "RT": RT
+            // "scene_exemplar": null,
+        });
+
         // document.addEventListener("keypress", show_scene(), false);
     };
 
@@ -304,6 +311,66 @@ var practice = function() {
 	psiTurk.showPage('stage.html');
 
 	next();
+
+};
+
+/****************
+* Questionnaire *
+****************/
+
+var Questionnaire = function() {
+
+	var error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
+
+	record_responses = function() {
+
+		psiTurk.recordTrialData({'phase':'postquestionnaire', 'status':'submit'});
+
+		$('textarea').each( function(i, val) {
+			psiTurk.recordUnstructuredData(this.id, this.value);
+		});
+		$('select').each( function(i, val) {
+			psiTurk.recordUnstructuredData(this.id, this.value);
+		});
+		$('input').each( function(i, val) {
+			psiTurk.recordUnstructuredData(this.id, this.value);
+		});
+	};
+
+	prompt_resubmit = function() {
+		document.body.innerHTML = error_message;
+		$("#resubmit").click(resubmit);
+	};
+
+	resubmit = function() {
+		document.body.innerHTML = "<h1>Trying to resubmit...</h1>";
+		reprompt = setTimeout(prompt_resubmit, 10000);
+
+		psiTurk.saveData({
+			success: function() {
+			    clearInterval(reprompt);
+                //psiTurk.computeBonus('compute_bonus', function(){finish()});
+                finish();
+			},
+			error: prompt_resubmit
+		});
+	};
+
+	// Load the questionnaire snippet
+	psiTurk.showPage('postquestionnaire.html');
+	psiTurk.recordTrialData({'phase':'postquestionnaire', 'status':'begin'});
+
+	$("#next").click(function () {
+	    record_responses();
+	    psiTurk.saveData({
+            success: function(){
+                //psiTurk.computeBonus('compute_bonus', function() {
+                	psiTurk.completeHIT(); // when finished saving compute bonus, the quit
+                //});
+            },
+            error: prompt_resubmit});
+	});
+
 
 };
 
