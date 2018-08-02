@@ -239,7 +239,7 @@ var practice = function() {
 
         prac_trial_count ++;
         // console.log("end of trial:" + prac_trial_count);
-		clearTimeout(show_gabors);
+        // clearTimeout(show_gabors);
 	};
 
     // need to restrict key press to f and j
@@ -277,7 +277,6 @@ var practice = function() {
             ITI();
 
         } else {
-            console.log("wrong fucking key");
             resp    = 0;
             acc     = 99;
             handle_fin = setTimeout(function(){
@@ -315,10 +314,16 @@ var practice = function() {
 };
 
 /****************
-* Questionnaire *
+* Post-experiment Questionnaire
+*
+* Participants will need to answer this at the end to successfully complete their HIT.
+* Asks basic questions (age, gender, strategy, difficulty, etc)
+* Edit the "questionnaire.html" file in templates folder to add/remove questions
+* Check "style.css" file in static/css folder for formatting issues
 ****************/
 
 var Questionnaire = function() {
+    document.body.style.cursor = "default";
 
 	var error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
 
@@ -370,7 +375,6 @@ var Questionnaire = function() {
             },
             error: prompt_resubmit});
 	});
-
 
 };
 
