@@ -117,7 +117,7 @@ IMG.displayed {
 	max-height:60%;
 } 
 
-#difficulty, #engagement, #gender, #age, #strategy, #error{
+#difficulty, #engagement, #gender, #hand, #age, #strategy, #error{
 	color: black;
 }
 	
