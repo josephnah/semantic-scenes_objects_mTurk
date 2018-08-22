@@ -10,25 +10,10 @@
             This is the third page of instructions
         </p>
 
-
         <p>
-			<img id="instruction3" class="displayed" src="" alt="Instruction3" />
+            <img id="instruction3" class="displayed" src="{{ server_location }}/static/images/practice3.png" alt="Instruction3" />
         </p>
-        <script type="text/javascript">
-			/*pickpicture = function(){
-				if (condition == 0){
-					picture = "{{ server_location }}/static/images/pracinstruction3-1.PNG";
-				} else{
-					picture = "{{ server_location }}/static/images/pracinstruction3-2.PNG";
-				};
-			return picture;
-			};*/
-			if (condition == 0){
-					document.getElementById("instruction3").src ="{{ server_location }}/static/images/pracinstruction3-1.png";
-				} else{
-					document.getElementById("instruction3").src ="{{ server_location }}/static/images/pracinstruction3-2.png";
-			};
-        </script>
+
 
         <script type="text/javascript">
         //console.log(psiTurk.getInstructionIndicator())

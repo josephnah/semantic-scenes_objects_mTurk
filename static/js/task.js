@@ -16,9 +16,15 @@ var psiTurk = new PsiTurk(uniqueId, adServerLoc, mode);
 ********************/
 var trial_matrix = [];
 var trial_matrix_file = "/static/trial-type.csv";
-var prac_length = 10;
 var pages = [
-	"instructions/instruct-ready.html",
+	"instructions/instruct-1.html",
+    "instructions/instruct-2.html",
+    "instructions/instruct-3.html",
+    "instructions/instruct-4.html",
+    "instructions/instruct-5.html",
+    "instructions/instruct-6.html",
+    "instructions/instruct-7.html",
+    "instructions/instruct-ready.html",
 	"stage.html",
 	"postquestionnaire.html"
 ];
@@ -26,8 +32,8 @@ var pages = [
 var screen_size         = [1080, 800];
 var scene_size          = [640, 512];
 var object_size         = 150;
-var target_gabor_size   = 50;
-var center_gabor_size   = 30;
+var target_gabor_size   = 100;
+var center_gabor_size   = 100;
 var object_coordinate   = 200;
 
 // x, y Coordinates for stimuli positioning
@@ -42,7 +48,14 @@ var fixation_width = 5;
 psiTurk.preloadPages(pages);
 
 var instructionPages = [ // add as a list as many pages as you like
-	"instructions/instruct-ready.html"
+	"instructions/instruct-1.html",
+    "instructions/instruct-2.html",
+    "instructions/instruct-3.html",
+    "instructions/instruct-4.html",
+    "instructions/instruct-5.html",
+    "instructions/instruct-6.html",
+    "instructions/instruct-7.html"
+    // "instructions/instruct-ready.html"
 ];
 
 // object path defined in object presenting function
@@ -53,8 +66,7 @@ var index_scene_category    = 0;
 var index_scene_exemplar    = 1;
 var index_main_object       = 2;
 var index_other_object      = 3;
-var index_main_object_loc   = 4; // should this be random? 2018-07-29
-var index_target_loc        = 5;
+var index_target_loc        = 4;
 
 // Presentation time
 var ITI_time                = 500;
@@ -96,13 +108,16 @@ function readTextFile(file, shuffle){
                 trial_matrix.push(tabs);
             });
             if (shuffle === 1){
-            trial_matrix = _.shuffle(trial_matrix)
+            trial_matrix1 = _.shuffle(trial_matrix);
+            trial_matrix2 = _.shuffle(trial_matrix);
+            trial_matrix = trial_matrix1.concat(trial_matrix2);
             }
         }
     };
     rawFile.send(null);
 }
 readTextFile(trial_matrix_file,1);
+var prac_length = trial_matrix.length-1;
 // console.log(trial_matrix);
 
 /********************
@@ -126,8 +141,9 @@ var practice = function() {
     var prac_trial_count = 0;
     // console.log("start of trial:" + prac_trial_count);
     // randomization for gabor orientations & orientation match
-    var orient_match    = Math.random();
-    var match_determine = Math.random();
+    var orient_match                = Math.random();
+    var match_determine             = Math.random();
+    var object_location_determine   = Math.random();
     var match;
     var target_ori;
     // information for practice trials [x = row][y = column]
@@ -138,7 +154,7 @@ var practice = function() {
         var s = Snap("#svgMain");
         s.clear();
         // finish practice
-        if (prac_trial_count === prac_length) {
+        if (prac_trial_count ===prac_length) {
 			clearTimeout();
 			finish();
 		} else {
@@ -181,7 +197,7 @@ var practice = function() {
         this.main_object_path   = "static/images/objects/" + this.main_object_stim + img_file_ext; // path to image
         this.other_object_path  = "static/images/objects/" + this.other_object_stim + img_file_ext; // path to image
 
-        if (parseInt([prac_trials[prac_trial_count][index_main_object_loc]]) === 1) {
+        if (object_location_determine < .5) {
             this.main_object_location_x     = left_loc_object[0];
             this.main_object_location_y     = left_loc_object[1];
             this.other_object_location_x    = right_loc_object[0];
@@ -221,8 +237,8 @@ var practice = function() {
         } else {
             this.gabor_location = right_loc_gabor
         }
-        this.target_gabor = this.s.image("static/images/gabors/gabor02.png", this.gabor_location[0], this.gabor_location[1], target_gabor_size, target_gabor_size);
-        this.center_gabor = this.s.image("static/images/gabors/gabor01.png", center_loc_gabor[0],center_loc_gabor[1], center_gabor_size, center_gabor_size);
+        this.target_gabor = this.s.image("static/images/gabors/gabor03.png", this.gabor_location[0], this.gabor_location[1], target_gabor_size, target_gabor_size);
+        this.center_gabor = this.s.image("static/images/gabors/gabor03.png", center_loc_gabor[0],center_loc_gabor[1], center_gabor_size, center_gabor_size);
         // rotates gabor patch
         this.target_gabor.transform("r"+parseInt(target_ori));
         this.center_gabor.transform("r"+parseInt(center_ori));
