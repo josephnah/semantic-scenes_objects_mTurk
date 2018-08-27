@@ -32,8 +32,9 @@ var pages = [
 var screen_size         = [1080, 800];
 var scene_size          = [640, 512];
 var object_size         = 150;
-var target_gabor_size   = 100;
-var center_gabor_size   = 100;
+var target_gabor_size   = 50;
+var distractor_size     = 50;
+var center_gabor_size   = 20;
 var object_coordinate   = 200;
 
 // x, y Coordinates for stimuli positioning
@@ -82,7 +83,7 @@ var show_fixation = function(){
     this.fixation = s.group(this.vertical, this.horizontal);
     this.fixation.attr({
       id:"fix1",
-      stroke: "#ffffff",
+      stroke: "#47ff7a",
       strokeWidth: fixation_width
     });
 };
@@ -233,12 +234,17 @@ var practice = function() {
         }
         // console.log(match);
         if (parseInt([prac_trials[prac_trial_count][index_target_loc]]) === 1) {
-            this.gabor_location = left_loc_gabor
+            this.gabor_location     = left_loc_gabor;
+            this.distractor_location = right_loc_gabor;
         } else {
-            this.gabor_location = right_loc_gabor
+            this.gabor_location = right_loc_gabor;
+            this.distractor_location = left_loc_gabor;
+
         }
-        this.target_gabor = this.s.image("static/images/gabors/gabor03.png", this.gabor_location[0], this.gabor_location[1], target_gabor_size, target_gabor_size);
-        this.center_gabor = this.s.image("static/images/gabors/gabor03.png", center_loc_gabor[0],center_loc_gabor[1], center_gabor_size, center_gabor_size);
+        this.target_gabor   = this.s.image("static/images/gabors/gabor01.png", this.gabor_location[0], this.gabor_location[1], target_gabor_size, target_gabor_size);
+        this.center_gabor   = this.s.image("static/images/gabors/gabor02.png", center_loc_gabor[0],center_loc_gabor[1], center_gabor_size, center_gabor_size);
+        this.distract_gabor = this.s.image("static/images/gabors/distractor.png", this.distractor_location[0],this.distractor_location[1], target_gabor_size, target_gabor_size);
+
         // rotates gabor patch
         this.target_gabor.transform("r"+parseInt(target_ori));
         this.center_gabor.transform("r"+parseInt(center_ori));
