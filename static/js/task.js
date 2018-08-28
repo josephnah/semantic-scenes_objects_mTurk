@@ -119,8 +119,14 @@ function readTextFile(file, shuffle){
 }
 readTextFile(trial_matrix_file,1);
 var prac_length = trial_matrix.length-1;
-// console.log(trial_matrix);
+console.log(prac_length);
 
+arr = [];
+for (i = 0; i <= prac_length; i++) {
+    arr[i] = Math.random();
+}
+
+// console.log(arr);
 /********************
 * HTML manipulation
 *
@@ -140,11 +146,8 @@ var practice = function() {
 
     // count trial # of practice
     var prac_trial_count = 0;
-    // console.log("start of trial:" + prac_trial_count);
+    console.log("start of trial:" + prac_trial_count);
     // randomization for gabor orientations & orientation match
-    var orient_match                = Math.random();
-    var match_determine             = Math.random();
-    var object_location_determine   = Math.random();
     var match;
     var target_ori;
     // information for practice trials [x = row][y = column]
@@ -160,14 +163,12 @@ var practice = function() {
 			finish();
 		} else {
             document.removeEventListener("keypress", get_response, false); // Just in case
-
             show_fixation();
 			clearTimeout(); //NOT sure if this is needed
 
             // setTimeout function activates AFTER inputted time
 			disp_scene = setTimeout(function(){
 				show_scene("static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext);}, ITI_time);
-			    // show_scene();}, ITI_time);
 			disp_objects = setTimeout(function(){
 				show_objects();}, ITI_time + scene_display_time);
 			disp_targets = setTimeout(function(){
@@ -198,6 +199,8 @@ var practice = function() {
         this.main_object_path   = "static/images/objects/" + this.main_object_stim + img_file_ext; // path to image
         this.other_object_path  = "static/images/objects/" + this.other_object_stim + img_file_ext; // path to image
 
+        var object_location_determine   = Math.random();
+
         if (object_location_determine < .5) {
             this.main_object_location_x     = left_loc_object[0];
             this.main_object_location_y     = left_loc_object[1];
@@ -216,6 +219,9 @@ var practice = function() {
 
     var show_gabors = function() {
         this.s = Snap("#svgMain");
+        var orient_match    = Math.random();
+        var match_determine = Math.random();
+
         gabor_onset = new Date().getTime();
         // Determine the orientation of target gabor
         if (orient_match < .5) {
@@ -275,7 +281,7 @@ var practice = function() {
 
             if (e.charCode === 102 & match === 1) {
                 acc = 1;
-            } else if (e.charCode === 106 & match === 2) {
+            } else if (e.charCode === 106 & match === 0) {
                 acc = 1;
             } else {
                 acc = 0;
