@@ -76,6 +76,11 @@ var object_display_time     = 750;
 var gabor_display_time      = 200;
 var get_response_time       = 2000;
 
+// Misc. Variables
+var practice_length = 20;
+var block_size      = 80;
+var total_blocks    = 4;
+
 var show_fixation = function(){
     this.s = Snap("#svgMain"); // initiate scalable vector graphics (think of canvas to draw on)
     this.vertical = this.s.line(center[0]-10, center[1], center[0]+10, center[1]);
@@ -118,13 +123,9 @@ function readTextFile(file, shuffle){
     rawFile.send(null);
 }
 readTextFile(trial_matrix_file,1);
-var prac_length = trial_matrix.length-1;
-console.log(prac_length);
 
-arr = [];
-for (i = 0; i <= prac_length; i++) {
-    arr[i] = Math.random();
-}
+var object_location = [];
+
 
 // console.log(arr);
 /********************
@@ -143,10 +144,17 @@ for (i = 0; i <= prac_length; i++) {
 
 var practice = function() {
     document.body.style.cursor = 'none';
-
+    var exp_length = trial_matrix.length-1;
+    console.log(prac_length);
     // count trial # of practice
     var prac_trial_count = 0;
     console.log("start of trial:" + prac_trial_count);
+
+    // Array for object location randomization
+    for (i = 0; i <= prac_length; i++) {
+        object_location[i] = Math.random();
+    }
+
     // randomization for gabor orientations & orientation match
     var match;
     var target_ori;
@@ -199,9 +207,7 @@ var practice = function() {
         this.main_object_path   = "static/images/objects/" + this.main_object_stim + img_file_ext; // path to image
         this.other_object_path  = "static/images/objects/" + this.other_object_stim + img_file_ext; // path to image
 
-        var object_location_determine   = Math.random();
-
-        if (object_location_determine < .5) {
+        if (object_location[prac_trial_count] < .5) {
             this.main_object_location_x     = left_loc_object[0];
             this.main_object_location_y     = left_loc_object[1];
             this.other_object_location_x    = right_loc_object[0];
@@ -300,7 +306,7 @@ var practice = function() {
                     });
                 }
                 handle_fin = setTimeout(function(){
-                    next()}, 500);
+                    rest()}, 500);
             };
             ITI();
 
@@ -323,6 +329,33 @@ var practice = function() {
         });
 
         // document.addEventListener("keypress", show_scene(), false);
+    };
+
+    // Adds rest inbetween blocks
+    var rest = function() {
+        if (prac_trial_count % block_size == 0 && prac_trial_count != prac_length) {
+            this.s = Snap("#svgMain");
+            s.clear();
+            var block_count = prac_trial_count/block_size;
+            var progress = total_blocks - block_count;
+            var str1 = progress.toString();
+            var str2 = " out of 4 blocks left. Please take a break. Press spacebar to continue";
+            var info = str1.concat(str2);
+            var infotext = s.text(320,320,info).attr({'fill' : 'white',  'stroke': 'white', 'stroke-width': 0.6});
+            document.addEventListener("keypress",nextblock,false);
+            block ++;
+            blocktype = blockorder.shift();
+        } else {
+            next();
+        }
+    };
+
+    var nextblock = function(e){
+        if (e.keyCode == 32){
+            document.removeEventListener("keypress",nextblock,false);
+            clearTimeout();
+            next();
+        }
     };
 
     var disp_plz_respond = function() {
