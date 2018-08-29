@@ -78,7 +78,7 @@ var gabor_display_time      = 200;
 var get_response_time       = 2000;
 
 // Misc. Variables
-var prac_length     = 20;
+var prac_length     = 1;
 var block_size      = 80;
 var total_blocks    = 4;
 
@@ -177,7 +177,7 @@ var practice = function() {
 
     var finish = function() {
 		this.s = Snap('#svgMain');
-		this.s.image("/static/images/after_prac.png", 0,200);
+		this.s.image("/static/images/after_prac.png", center[0] - 1447/2, center[1] - 872/2);
 		document.addEventListener("keydown",finishprac, false);
 	};
 
@@ -295,7 +295,7 @@ var practice = function() {
                     });
                 }
                 handle_fin = setTimeout(function(){
-                    rest()}, 500);
+                    next()}, 500);
             };
             ITI();
 
@@ -336,6 +336,7 @@ var main_task = function() {
     console.log(exp_length);
     // count trial # of practice
     var trial_count = 0;
+    var block       = 1;
     console.log("start of trial:" + trial_count);
 
     // Array for object location randomization
@@ -376,6 +377,8 @@ var main_task = function() {
 
     var finish = function() {
 		this.s = Snap('#svgMain');
+        this.s.image("/static/images/after_exp.png", center[0] - 1447/2, center[1] - 872/2);
+
 		probeinst1 = s.text(540,400,'You completed the experiment. Thank you! Press spacebar to continue.').attr({'fill' : 'white',  'stroke': 'white', 'stroke-width': 0.6});
 		document.addEventListener("keydown",to_questionnaire, false);
 	};
@@ -459,7 +462,7 @@ var main_task = function() {
 
         document.addEventListener("keypress", get_response, false);
 
-        prac_trial_count ++;
+        trial_count ++;
         // console.log("end of trial:" + prac_trial_count);
         // clearTimeout(show_gabors);
 	};
@@ -480,7 +483,7 @@ var main_task = function() {
             } else {
                 acc = 0;
             }
-            console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT);
+            console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT, ", trial: ", trial_count);
 
             var ITI = function(){
                 this.s = Snap("#svgMain");
@@ -507,10 +510,13 @@ var main_task = function() {
 
         }
         psiTurk.recordTrialData({"phase": "EXPERIMENT",
+            "block": block,
             "trial": trial_count,
-            "match" : match,
+            "match": match,
             "target_ori": target_ori,
             "target_location": [exp_trials[trial_count][index_target_loc]],
+            "main_obj": [exp_trials[trial_count][index_main_object]],
+            "other_obj": [exp_trials[trial_count][index_other_object]],
             "scene_type": [exp_trials[trial_count][index_scene_category]],
             "RT": RT
             // "scene_exemplar": null,
@@ -521,7 +527,7 @@ var main_task = function() {
 
     // Adds rest inbetween blocks
     var rest = function() {
-        if (trial_count % block_size == 0 && trial_count != prac_length) {
+        if (trial_count % block_size === 0 && trial_count !== exp_length) {
             this.s = Snap("#svgMain");
             s.clear();
             var block_count = trial_count/block_size;
@@ -532,7 +538,6 @@ var main_task = function() {
             var infotext = s.text(320,320,info).attr({'fill' : 'white',  'stroke': 'white', 'stroke-width': 0.6});
             document.addEventListener("keypress",nextblock,false);
             block ++;
-            blocktype = blockorder.shift();
         } else {
             next();
         }
