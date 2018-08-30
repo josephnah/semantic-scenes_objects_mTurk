@@ -68,7 +68,7 @@ var index_scene_category    = 0;
 var index_scene_exemplar    = 1;
 var index_main_object       = 2;
 var index_other_object      = 3;
-var index_target_loc        = 4;
+var index_condition         = 4;
 
 // Presentation time
 var ITI_time                = 500;
@@ -124,7 +124,7 @@ function readTextFile(file, shuffle){
     };
     rawFile.send(null);
 }
-readTextFile(trial_matrix_file,1);
+readTextFile(trial_matrix_file,1 );
 
 var object_location = [];
 
@@ -144,9 +144,10 @@ var practice = function() {
         object_location[i] = Math.random();
     }
 
-    // initialize gabor orientations & orientation match variables
+    // initialize gabor orientations & orientation match & main object location variables
     var match;
     var target_ori;
+    var main_object_loc;
     // information for practice trials [x = row][y = column]
     prac_trials = prac_trial_matrix;
 
@@ -201,11 +202,13 @@ var practice = function() {
             this.main_object_location_y     = left_loc_object[1];
             this.other_object_location_x    = right_loc_object[0];
             this.other_object_location_y    = right_loc_object[1];
+            main_object_loc                 = 1
         } else {
             this.main_object_location_x     = right_loc_object[0];
             this.main_object_location_y     = right_loc_object[1];
             this.other_object_location_x    = left_loc_object[0];
             this.other_object_location_y    = left_loc_object[1];
+            main_object_loc                 = 2
         }
 
         this.s.image(this.main_object_path, this.main_object_location_x, this.main_object_location_y, object_size[0], object_size[1]);
@@ -234,14 +237,21 @@ var practice = function() {
             var center_ori = -target_ori;
         }
         // console.log(match);
-        if (parseInt([prac_trials[prac_trial_count][index_target_loc]]) === 1) {
-            this.gabor_location     = left_loc_gabor;
-            this.distractor_location = right_loc_gabor;
-        } else {
-            this.gabor_location = right_loc_gabor;
-            this.distractor_location = left_loc_gabor;
-
+        // figure out condition and where gabor should be
+        if (parseInt([prac_trials[prac_trial_count][index_condition]]) === 1 && main_object_loc === 1) {
+            this.gabor_location         = left_loc_gabor;
+            this.distractor_location    = right_loc_gabor;
+        } else if (parseInt([prac_trials[prac_trial_count][index_condition]]) === 1 && main_object_loc === 2) {
+            this.gabor_location         = right_loc_gabor;
+            this.distractor_location    = left_loc_gabor;
+        } else if (parseInt([prac_trials[prac_trial_count][index_condition]]) === 2 && main_object_loc === 1) {
+            this.gabor_location         = right_loc_gabor;
+            this.distractor_location    = left_loc_gabor;
+        } else if (parseInt([prac_trials[prac_trial_count][index_condition]]) === 2 && main_object_loc === 2) {
+            this.gabor_location         = left_loc_gabor;
+            this.distractor_location    = right_loc_gabor;
         }
+
         this.target_gabor   = this.s.image("static/images/gabors/gabor01.png", this.gabor_location[0], this.gabor_location[1], target_gabor_size, target_gabor_size);
         this.center_gabor   = this.s.image("static/images/gabors/gabor02.png", center_loc_gabor[0],center_loc_gabor[1], center_gabor_size, center_gabor_size);
         this.distract_gabor = this.s.image("static/images/gabors/distractor.png", this.distractor_location[0],this.distractor_location[1], target_gabor_size, target_gabor_size);
@@ -347,6 +357,7 @@ var main_task = function() {
     // randomization for gabor orientations & orientation match
     var match;
     var target_ori;
+    var main_object_loc;
     // information for practice trials [x = row][y = column]
     exp_trials = trial_matrix;
 
@@ -403,11 +414,15 @@ var main_task = function() {
             this.main_object_location_y     = left_loc_object[1];
             this.other_object_location_x    = right_loc_object[0];
             this.other_object_location_y    = right_loc_object[1];
+            main_object_loc                 = 1
+
         } else {
             this.main_object_location_x     = right_loc_object[0];
             this.main_object_location_y     = right_loc_object[1];
             this.other_object_location_x    = left_loc_object[0];
             this.other_object_location_y    = left_loc_object[1];
+            main_object_loc                 = 2
+
         }
 
         this.s.image(this.main_object_path, this.main_object_location_x, this.main_object_location_y, object_size[0], object_size[1]);
@@ -435,15 +450,22 @@ var main_task = function() {
             match = 0;
             var center_ori = -target_ori;
         }
-        // console.log(match);
-        if (parseInt([exp_trials[trial_count][index_target_loc]]) === 1) {
-            this.gabor_location     = left_loc_gabor;
-            this.distractor_location = right_loc_gabor;
-        } else {
-            this.gabor_location = right_loc_gabor;
-            this.distractor_location = left_loc_gabor;
 
+        // figure out condition and where gabor should be
+        if (parseInt([exp_trials[trial_count][index_condition]]) === 1 && main_object_loc === 1) {
+            this.gabor_location         = left_loc_gabor;
+            this.distractor_location    = right_loc_gabor;
+        } else if (parseInt([exp_trials[trial_count][index_condition]]) === 1 && main_object_loc === 2) {
+            this.gabor_location         = right_loc_gabor;
+            this.distractor_location    = left_loc_gabor;
+        } else if (parseInt([exp_trials[trial_count][index_condition]]) === 2 && main_object_loc === 1) {
+            this.gabor_location         = right_loc_gabor;
+            this.distractor_location    = left_loc_gabor;
+        } else if (parseInt([exp_trials[trial_count][index_condition]]) === 2 && main_object_loc === 2) {
+            this.gabor_location         = left_loc_gabor;
+            this.distractor_location    = right_loc_gabor;
         }
+
         this.target_gabor   = this.s.image("static/images/gabors/gabor01.png", this.gabor_location[0], this.gabor_location[1], target_gabor_size, target_gabor_size);
         this.center_gabor   = this.s.image("static/images/gabors/gabor02.png", center_loc_gabor[0],center_loc_gabor[1], center_gabor_size, center_gabor_size);
         this.distract_gabor = this.s.image("static/images/gabors/distractor.png", this.distractor_location[0],this.distractor_location[1], target_gabor_size, target_gabor_size);
@@ -514,12 +536,16 @@ var main_task = function() {
             "trial": trial_count,
             "match": match,
             "target_ori": target_ori,
-            "target_location": [exp_trials[trial_count][index_target_loc]],
+            "condition": [exp_trials[trial_count][index_condition]],
             "main_obj": [exp_trials[trial_count][index_main_object]],
             "other_obj": [exp_trials[trial_count][index_other_object]],
+            "main_obj_loc": main_object_loc,
             "scene_type": [exp_trials[trial_count][index_scene_category]],
-            "RT": RT
-            // "scene_exemplar": null,
+            "scene_exemplar": [exp_trials[trial_count][index_scene_exemplar]],
+            "accuracy": acc,
+            "RT": RT,
+            "resp": resp
+
         });
 
         // document.addEventListener("keypress", show_scene(), false);
