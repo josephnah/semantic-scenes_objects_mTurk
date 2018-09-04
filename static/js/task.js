@@ -56,8 +56,8 @@ var instructionPages = [ // add as a list as many pages as you like
     "instructions/instruct-4.html",
     "instructions/instruct-5.html",
     "instructions/instruct-6.html",
-    "instructions/instruct-7.html"
-    // "instructions/instruct-ready.html"
+    "instructions/instruct-7.html",
+    "instructions/instruct-ready.html"
 ];
 
 // object path defined in object presenting function
@@ -78,7 +78,7 @@ var gabor_display_time      = 200;
 var get_response_time       = 2000;
 
 // Misc. Variables
-var prac_length     = 1;
+var prac_length     = 20;
 var block_size      = 80;
 var total_blocks    = 4;
 
@@ -163,7 +163,7 @@ var practice = function() {
             document.removeEventListener("keypress", get_response, false); // Just in case
             show_fixation();
 			clearTimeout(); //NOT sure if this is needed
-
+            console.log(prac_trial_count)
             // setTimeout function activates AFTER inputted time
 			disp_scene = setTimeout(function(){
 				show_scene("static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext);}, ITI_time);
@@ -171,9 +171,14 @@ var practice = function() {
 				show_objects();}, ITI_time + scene_display_time);
 			disp_targets = setTimeout(function(){
 			    show_gabors();}, ITI_time + scene_display_time + object_display_time);
-            disp_response = setTimeout(function(){
-			    show_SOA();}, ITI_time + scene_display_time + object_display_time + gabor_display_time);
-		}
+            if (prac_trial_count > 9) {
+                disp_response = setTimeout(function(){
+                    show_SOA();}, ITI_time + scene_display_time + object_display_time + gabor_display_time);
+            } else {
+                disp_response = setTimeout(function(){
+                    show_SOA();}, ITI_time + scene_display_time + object_display_time + 1000);
+			};
+		};
 	};
 
     var finish = function() {
@@ -259,6 +264,7 @@ var practice = function() {
         // rotates gabor patch
         this.target_gabor.transform("r"+parseInt(target_ori));
         this.center_gabor.transform("r"+parseInt(center_ori));
+        document.addEventListener("keypress", get_response, false);
 
     };
     // need to figure out how to exit this when no keypress
@@ -305,7 +311,7 @@ var practice = function() {
                     });
                 }
                 handle_fin = setTimeout(function(){
-                    next()}, 500);
+                    rest()}, 500);
             };
             ITI();
 
@@ -317,6 +323,27 @@ var practice = function() {
 
 
         };
+    };
+
+    // inform participants of break between practice trials
+    var rest = function() {
+        if (prac_trial_count === 10 && prac_trial_count !== prac_length) {
+            this.s = Snap("#svgMain");
+            s.clear();
+            var info = "Now the 2nd half of practice will be at the normal speed. Press space to continue.";
+            var infotext = s.text(320,320,info).attr({'fill' : 'white',  'stroke': 'white', 'stroke-width': 0.6});
+            document.addEventListener("keypress",nextblock,false);
+        } else {
+            next();
+        }
+    };
+
+    var nextblock = function(e){
+        if (e.keyCode == 32){
+            document.removeEventListener("keypress",nextblock,false);
+            clearTimeout();
+            next();
+        }
     };
 
     var disp_plz_respond = function() {
@@ -548,7 +575,6 @@ var main_task = function() {
 
         });
 
-        // document.addEventListener("keypress", show_scene(), false);
     };
 
     // Adds rest inbetween blocks
