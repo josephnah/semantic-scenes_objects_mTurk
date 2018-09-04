@@ -148,6 +148,7 @@ var practice = function() {
     var match;
     var target_ori;
     var main_object_loc;
+
     // information for practice trials [x = row][y = column]
     prac_trials = prac_trial_matrix;
 
@@ -163,7 +164,7 @@ var practice = function() {
             document.removeEventListener("keypress", get_response, false); // Just in case
             show_fixation();
 			clearTimeout(); //NOT sure if this is needed
-            console.log(prac_trial_count)
+            // console.log(prac_trial_count)
             // setTimeout function activates AFTER inputted time
 			disp_scene = setTimeout(function(){
 				show_scene("static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext);}, ITI_time);
@@ -174,10 +175,7 @@ var practice = function() {
             if (prac_trial_count > 9) {
                 disp_response = setTimeout(function(){
                     show_SOA();}, ITI_time + scene_display_time + object_display_time + gabor_display_time);
-            } else {
-                disp_response = setTimeout(function(){
-                    show_SOA();}, ITI_time + scene_display_time + object_display_time + 1000);
-			};
+            };
 		};
 	};
 
@@ -196,7 +194,6 @@ var practice = function() {
 
     var show_objects = function() {
         this.s = Snap("#svgMain");
-
         this.main_object_stim   = [prac_trials[prac_trial_count][index_main_object]];
         this.other_object_stim  = [prac_trials[prac_trial_count][index_other_object]];
         this.main_object_path   = "static/images/objects/" + this.main_object_stim + img_file_ext; // path to image
@@ -265,6 +262,7 @@ var practice = function() {
         this.target_gabor.transform("r"+parseInt(target_ori));
         this.center_gabor.transform("r"+parseInt(center_ori));
         document.addEventListener("keypress", get_response, false);
+        prac_trial_count ++;
 
     };
     // need to figure out how to exit this when no keypress
@@ -278,13 +276,13 @@ var practice = function() {
 
         prac_trial_count ++;
         // console.log("end of trial:" + prac_trial_count);
-        // clearTimeout(show_gabors);
+        clearTimeout(show_gabors);
 	};
 
     // need to restrict key press to f and j
     var get_response = function (e) {
         if (e.charCode === 102 || e.charCode === 106) { // 102 = f 106 = j
-
+            skip_soa = 1;
             var RT = new Date().getTime() - gabor_onset; // Get RT
             document.removeEventListener("keypress", get_response, false);
             resp = 1;
