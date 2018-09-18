@@ -29,12 +29,12 @@ var pages = [
 	"stage.html",
 	"postquestionnaire.html"
 ];
+
 // sizes of images utilized in experiment
 var screen_size         = [1080, 800];
 var scene_size          = [640, 512];
 var object_size         = 150;
 var target_gabor_size   = 50;
-var distractor_size     = 50;
 var center_gabor_size   = 20;
 var object_coordinate   = 200;
 
@@ -75,7 +75,6 @@ var ITI_time                = 500;
 var scene_display_time      = 1000;
 var object_display_time     = 750;
 var gabor_display_time      = 200;
-var get_response_time       = 2000;
 
 // Misc. Variables
 var prac_length     = 20;
@@ -166,16 +165,25 @@ var practice = function() {
 			clearTimeout(); //NOT sure if this is needed
             // console.log(prac_trial_count)
             // setTimeout function activates AFTER inputted time
+            // pre-loads images before start of trial (reduces lag)
+            images = [
+                "static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext,
+                "static/images/objects/" + [prac_trials[prac_trial_count][index_main_object]] + img_file_ext,
+                "static/images/objects/" + [prac_trials[prac_trial_count][index_other_object]] + img_file_ext
+
+            ];
+            psiTurk.preloadImages(images);
 			disp_scene = setTimeout(function(){
 				show_scene("static/images/scenes/" + [prac_trials[prac_trial_count][index_scene_category]] +"/" +[prac_trials[prac_trial_count][index_scene_exemplar]]+ img_file_ext);}, ITI_time);
 			disp_objects = setTimeout(function(){
 				show_objects();}, ITI_time + scene_display_time);
 			disp_targets = setTimeout(function(){
 			    show_gabors();}, ITI_time + scene_display_time + object_display_time);
-            if (prac_trial_count > 9) {
+            if (prac_trial_count >= 10) {
                 disp_response = setTimeout(function(){
                     show_SOA();}, ITI_time + scene_display_time + object_display_time + gabor_display_time);
-            };
+            }
+
 		};
 	};
 
@@ -261,8 +269,12 @@ var practice = function() {
         // rotates gabor patch
         this.target_gabor.transform("r"+parseInt(target_ori));
         this.center_gabor.transform("r"+parseInt(center_ori));
-        document.addEventListener("keypress", get_response, false);
-        prac_trial_count ++;
+
+        if (prac_trial_count < 10) {
+            document.addEventListener("keypress", get_response, false);
+            console.log("hi");
+            prac_trial_count ++;
+        }
 
     };
     // need to figure out how to exit this when no keypress
@@ -312,14 +324,6 @@ var practice = function() {
                     rest()}, 500);
             };
             ITI();
-
-        } else {
-            resp    = 0;
-            acc     = 99;
-            handle_fin = setTimeout(function(){
-                disp_plz_respond()}, 100);
-
-
         };
     };
 
@@ -344,15 +348,6 @@ var practice = function() {
         }
     };
 
-    var disp_plz_respond = function() {
-        this.s = Snap("#svgMain");
-        s.clear();
-        show_fixation();
-
-        handle_fin = setTimeout(function(){
-		    next()}, 1000);
-    };
-
     // Load the stage.html snippet into the body of the page
 	psiTurk.showPage('stage.html');
 
@@ -366,6 +361,7 @@ var practice = function() {
  *****************/
 
 var main_task = function() {
+    psiTurk.preloadImages(images);
     document.body.style.cursor = 'none';
     var exp_length = trial_matrix.length-1;
     console.log(exp_length);
@@ -398,7 +394,13 @@ var main_task = function() {
             document.removeEventListener("keypress", get_response, false); // Just in case
             show_fixation();
 			clearTimeout(); //NOT sure if this is needed
+            images = [
+                "static/images/scenes/" + [exp_trials[trial_count][index_scene_category]] +"/" +[exp_trials[trial_count][index_scene_exemplar]]+ img_file_ext,
+                "static/images/objects/" + [exp_trials[trial_count][index_main_object]] + img_file_ext,
+                "static/images/objects/" + [exp_trials[trial_count][index_other_object]] + img_file_ext
 
+            ];
+            psiTurk.preloadImages(images);
             // setTimeout function activates AFTER inputted time
 			disp_scene = setTimeout(function(){
 				show_scene("static/images/scenes/" + [exp_trials[trial_count][index_scene_category]] +"/" +[exp_trials[trial_count][index_scene_exemplar]]+ img_file_ext);}, ITI_time);
@@ -547,15 +549,8 @@ var main_task = function() {
                     rest()}, 500);
             };
             ITI();
+        };
 
-        } else {
-            resp    = 0;
-            acc     = 99;
-            handle_fin = setTimeout(function(){
-                disp_plz_respond()}, 100);
-
-
-        }
         psiTurk.recordTrialData({"phase": "EXPERIMENT",
             "block": block,
             "trial": trial_count,
@@ -569,10 +564,9 @@ var main_task = function() {
             "scene_exemplar": [exp_trials[trial_count][index_scene_exemplar]],
             "accuracy": acc,
             "RT": RT,
+            "pressedKey": e.charCode,
             "resp": resp
-
         });
-
     };
 
     // Adds rest inbetween blocks
@@ -599,15 +593,6 @@ var main_task = function() {
             clearTimeout();
             next();
         }
-    };
-
-    var disp_plz_respond = function() {
-        this.s = Snap("#svgMain");
-        s.clear();
-        show_fixation();
-
-        handle_fin = setTimeout(function(){
-		    next()}, 1000);
     };
 
     // Load the stage.html snippet into the body of the page
