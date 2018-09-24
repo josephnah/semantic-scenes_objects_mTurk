@@ -18,7 +18,7 @@ rows = s.execute()
 
 data = []
 #status codes of subjects who completed experiment
-statuses = [4]
+statuses = [2]
 # if you have workers you wish to exclude, add them here
 exclude = []
 for row in rows:
@@ -31,7 +31,7 @@ for row in rows:
 
 # parse each participant's datastring as json object
 # and take the 'data' sub-object
-data = [json.loads(part)['eventdata'] for part in data]
+data = [json.loads(part)['data'] for part in data]
 
 # insert uniqueid field into trialdata in case it wasn't added
 # in experiment:
@@ -41,7 +41,7 @@ data = [json.loads(part)['eventdata'] for part in data]
 
 # flatten nested list so we just have a list of the trialdata recorded
 # each time psiturk.recordTrialData(trialdata) was called.
-# data = [record['trialdata'] for part in data for record in part]
+data = [record['trialdata'] for part in data for record in part]
 
 # print(data)
 # Put all subjects' trial data into a dataframe object from the
@@ -51,3 +51,9 @@ data_frame = pd.DataFrame(data)
 data_frame.to_clipboard(excel=True, sep='\t')
 
 # print(data_frame)
+
+print(data[0]['templates'][1])#
+test_data   = '{"employee_name": "James", "email": "james@gmail.com", "job_profile": ["Team Lead", "Sr. Developer"]}'
+Parsed_data  = json.loads(test_data)
+# print Parsed_data['job_profile'][]
+# http://blog.appliedinformaticsinc.com/how-to-parse-and-convert-json-to-csv-using-python/
