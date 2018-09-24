@@ -36,7 +36,7 @@ var scene_size          = [640, 512];
 var object_size         = 150;
 var target_gabor_size   = 50;
 var center_gabor_size   = 20;
-var object_coordinate   = 200;
+var object_coordinate   = 150;
 
 // x, y Coordinates for stimuli positioning
 var center              = [screen_size[0]/2, screen_size[1]/2];
