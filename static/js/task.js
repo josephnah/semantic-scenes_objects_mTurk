@@ -527,10 +527,13 @@ var main_task = function() {
 
             if (e.charCode === 102 & match === 1) {
                 acc = 1;
+                keyPressed = 102;
             } else if (e.charCode === 106 & match === 0) {
                 acc = 1;
+                keyPressed = 106;
             } else {
                 acc = 0;
+                keyPressed = e.charCode;
             }
             console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT, ", trial: ", trial_count);
 
@@ -552,19 +555,20 @@ var main_task = function() {
         };
 
         psiTurk.recordTrialData({"phase": "EXPERIMENT",
+            "exp_mode": 1,
             "block": block,
             "trial": trial_count,
             "match": match,
             "target_ori": target_ori,
-            "condition": [exp_trials[trial_count][index_condition]],
-            "main_obj": [exp_trials[trial_count][index_main_object]],
-            "other_obj": [exp_trials[trial_count][index_other_object]],
+            "condition": parseFloat([exp_trials[trial_count][index_condition]]),
+            "main_obj": parseFloat([exp_trials[trial_count][index_main_object]]),
+            "other_obj": parseFloat([exp_trials[trial_count][index_other_object]]),
             "main_obj_loc": main_object_loc,
-            "scene_type": [exp_trials[trial_count][index_scene_category]],
-            "scene_exemplar": [exp_trials[trial_count][index_scene_exemplar]],
+            "scene_type": parseFloat([exp_trials[trial_count][index_scene_category]]),
+            "scene_exemplar": parseFloat([exp_trials[trial_count][index_scene_exemplar]]),
             "accuracy": acc,
             "RT": RT,
-            "pressedKey": e.charCode,
+            "pressedKey": keyPressed,
             "resp": resp
         });
     };
