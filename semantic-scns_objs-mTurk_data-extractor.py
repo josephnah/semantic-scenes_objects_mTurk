@@ -1,10 +1,23 @@
+# created by joecool890
+# Extracts SQL database into pandas
+# Version 0.1.0
+# customized for semantic-scn-obj-mTurk
+# http://blog.appliedinformaticsinc.com/how-to-parse-and-convert-json-to-csv-using-python/
 from sqlalchemy import create_engine, MetaData, Table
 import json
 import pandas as pd
 
+# Specify location of data.
+# Data are stored as string in "data_column_name" in table, "table_name", in SQL.DB located in "db_url"
 db_url              = "sqlite:///participants.db"
-table_name          = 'turkdemo'
-data_column_name    = 'datastring'
+table_name          = "turkdemo"
+data_column_name    = "datastring"
+
+# Not sure if these are needed.
+hit_ID_name         = "hitid"
+worker_ID_name      = "workerid"
+assignment_ID_name  = "assignmentid"
+unique_ID_name      = "uniqueid"
 
 # boilerplace sqlalchemy setup
 engine = create_engine(db_url)
@@ -18,7 +31,7 @@ rows = s.execute()
 
 data = []
 #status codes of subjects who completed experiment
-statuses = [2]
+statuses = [4];
 # if you have workers you wish to exclude, add them here
 exclude = []
 for row in rows:
@@ -33,11 +46,15 @@ for row in rows:
 # and take the 'data' sub-object
 data = [json.loads(part)['data'] for part in data]
 
-# insert uniqueid field into trialdata in case it wasn't added
-# in experiment:
-# for part in data:
-#     for record in part:
-#         record['trialdata']['uniqueid'] = record['uniqueid']
+#insert uniqueid field into trialdata in case it wasn't added
+#in experiment:
+# print(data[0][0])
+print(data)
+for part in data:
+    for record in part:
+        record['trialdata']['uniqueid'] = record['uniqueid']
+        record['trialdata']['dateTime'] = record['dateTime']
+
 
 # flatten nested list so we just have a list of the trialdata recorded
 # each time psiturk.recordTrialData(trialdata) was called.
@@ -52,8 +69,9 @@ data_frame.to_clipboard(excel=True, sep='\t')
 
 # print(data_frame)
 
-print(data[0]['templates'][1])#
+# print(data)
+# print(data[9])
+
 test_data   = '{"employee_name": "James", "email": "james@gmail.com", "job_profile": ["Team Lead", "Sr. Developer"]}'
 Parsed_data  = json.loads(test_data)
 # print Parsed_data['job_profile'][]
-# http://blog.appliedinformaticsinc.com/how-to-parse-and-convert-json-to-csv-using-python/
