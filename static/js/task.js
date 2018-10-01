@@ -27,6 +27,7 @@ var pages = [
     "instructions/instruct-7.html",
     "instructions/instruct-ready.html",
 	"stage.html",
+    "survey.html",
 	"postquestionnaire.html"
 ];
 
@@ -77,7 +78,7 @@ var object_display_time     = 750;
 var gabor_display_time      = 200;
 
 // Misc. Variables
-var prac_length     = 20;
+var prac_length     = 1;
 var block_size      = 80;
 var total_blocks    = 4;
 
@@ -196,7 +197,7 @@ var practice = function() {
 	var finishprac = function(e){
 			if (e.keyCode === 32) {
 				document.removeEventListener("keydown",finishprac,false);
-				currentview = new main_task();
+				currentview = new survey();
 			}
 	};
 
@@ -398,7 +399,6 @@ var main_task = function() {
                 "static/images/scenes/" + [exp_trials[trial_count][index_scene_category]] +"/" +[exp_trials[trial_count][index_scene_exemplar]]+ img_file_ext,
                 "static/images/objects/" + [exp_trials[trial_count][index_main_object]] + img_file_ext,
                 "static/images/objects/" + [exp_trials[trial_count][index_other_object]] + img_file_ext
-
             ];
             psiTurk.preloadImages(images);
             // setTimeout function activates AFTER inputted time
@@ -416,7 +416,6 @@ var main_task = function() {
     var finish = function() {
 		this.s = Snap('#svgMain');
         this.s.image("/static/images/after_exp.png", center[0] - 1447/2, center[1] - 872/2);
-
 		probeinst1 = s.text(540,400,'You completed the experiment. Thank you! Press spacebar to continue.').attr({'fill' : 'white',  'stroke': 'white', 'stroke-width': 0.6});
 		document.addEventListener("keydown",to_questionnaire, false);
 	};
@@ -606,6 +605,12 @@ var main_task = function() {
 
 };
 
+var survey = function() {
+    document.body.style.cursor = "default";
+    	// Load the questionnaire snippet
+	psiTurk.showPage('survey.html');
+	psiTurk.recordTrialData({'phase':'survey', 'status':'begin'});
+};
 /****************
 * Post-experiment Questionnaire
 *
