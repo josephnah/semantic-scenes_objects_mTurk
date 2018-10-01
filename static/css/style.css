@@ -54,9 +54,9 @@ h1 {
 }
 
 #survey {
-  margin-top: auto;
-  width: 800px;
-  border: 1px solid red;
+  margin-top: 10%;
+  margin-left: 30%;   /* Automatic margin from left */
+  display: block;
 }
 
 .legal {
