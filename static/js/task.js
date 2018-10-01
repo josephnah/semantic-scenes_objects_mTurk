@@ -607,9 +607,27 @@ var main_task = function() {
 
 var survey = function() {
     document.body.style.cursor = "default";
-    	// Load the questionnaire snippet
 	psiTurk.showPage('survey.html');
-	psiTurk.recordTrialData({'phase':'survey', 'status':'begin'});
+    	// load your iframe with a url specific to your participant
+    $('#iframe').attr('src','https://columbiangwu.co1.qualtrics.com/jfe/form/SV_3EHflgEl2JdxXaR');
+    // add the all-important message event listener
+    // console.log($('#iframe'));
+    window.addEventListener('message', function(event){
+
+        // normally there would be a security check here on event.origin (see the MDN link above), but meh.
+        if (event.data) {
+            if (typeof event.data === 'string') {
+                q_message_array = event.data.split('|');
+                console.log(q_message_array);
+                if (q_message_array[0] == 'QualtricsEOS') {
+                    psiTurk.recordTrialData({'phase':'SURVEY', 'status':'back_from_qualtrics'});
+                    psiTurk.recordUnstructuredData('qualtrics_session_id', q_message_array[2]);
+                }
+            }
+        };
+        current_view = setTimeout(function(){
+				new Questionnaire()}, 1500);
+    })
 };
 /****************
 * Post-experiment Questionnaire
@@ -685,6 +703,6 @@ var currentview;
 $(window).load( function(){
     psiTurk.doInstructions(
     	instructionPages, // a list of pages you want to display in sequence
-    	function() { currentview = new practice(); } // what you want to do when you are done with instructions
+    	function() { currentview = new survey(); } // what you want to do when you are done with instructions
     );
 });
