@@ -53,6 +53,12 @@ h1 {
   font-size: 100%;
 }
 
+#survey {
+  margin-top: auto;
+  width: 800px;
+  border: 1px solid red;
+}
+
 .legal {
   text-align: justify;
   font-size: 11pt;
