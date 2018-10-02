@@ -369,7 +369,7 @@ var practice = function() {
 var main_task = function() {
     psiTurk.preloadImages(images);
     document.body.style.cursor = 'none';
-    var exp_length = trial_matrix.length-1;
+    var exp_length = trial_matrix.length;
     // console.log(exp_length);
     // count trial # of practice
     var trial_count = 0;
