@@ -78,7 +78,7 @@ var object_display_time     = 750;
 var gabor_display_time      = 200;
 
 // Misc. Variables
-var prac_length     = 1;
+var prac_length     = 20;
 var block_size      = 80;
 var total_blocks    = 4;
 
@@ -114,17 +114,22 @@ function readTextFile(file, shuffle){
                 var tabs = item.split(",");
                 trial_matrix.push(tabs);
             });
-            if (shuffle === 1){
+            if (shuffle === 1) {
             trial_matrix1       = _.shuffle(trial_matrix);
             trial_matrix2       = _.shuffle(trial_matrix);
             prac_trial_matrix   = _.shuffle(trial_matrix);
             trial_matrix = trial_matrix1.concat(trial_matrix2);
+            } else {
+                trial_matrix1       = trial_matrix;
+                trial_matrix2       = trial_matrix;
+                prac_trial_matrix   = trial_matrix;
+                trial_matrix        = trial_matrix1.concat(trial_matrix2);
             }
         }
     };
     rawFile.send(null);
 }
-readTextFile(trial_matrix_file,1 );
+readTextFile(trial_matrix_file,1);
 
 var object_location = [];
 
@@ -273,7 +278,7 @@ var practice = function() {
 
         if (prac_trial_count < 10) {
             document.addEventListener("keypress", get_response, false);
-            console.log("hi");
+            // console.log("hi");
             prac_trial_count ++;
         }
 
@@ -308,7 +313,7 @@ var practice = function() {
             } else {
                 acc = 0;
             }
-            console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT);
+            // console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT);
 
             var ITI = function(){
                 this.s = Snap("#svgMain");
@@ -365,11 +370,11 @@ var main_task = function() {
     psiTurk.preloadImages(images);
     document.body.style.cursor = 'none';
     var exp_length = trial_matrix.length-1;
-    console.log(exp_length);
+    // console.log(exp_length);
     // count trial # of practice
     var trial_count = 0;
     var block       = 1;
-    console.log("start of trial:" + trial_count);
+    // console.log("start of trial:" + trial_count);
 
     // Array for object location randomization
     for (i = 0; i <= exp_length; i++) {
@@ -382,6 +387,7 @@ var main_task = function() {
     var main_object_loc;
     // information for practice trials [x = row][y = column]
     exp_trials = trial_matrix;
+    //console.log(exp_trials);
 
     // function that dictates stimuli presentation order/duration
     var next = function() {
@@ -533,7 +539,7 @@ var main_task = function() {
                 acc = 0;
                 keyPressed = e.charCode;
             }
-            console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT, ", trial: ", trial_count);
+            // console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT, ", trial: ", trial_count);
 
             var ITI = function(){
                 this.s = Snap("#svgMain");
@@ -617,7 +623,7 @@ var survey = function() {
         if (event.data) {
             if (typeof event.data === 'string') {
                 q_message_array = event.data.split('|');
-                console.log(q_message_array);
+                // console.log(q_message_array);
                 if (q_message_array[0] == 'QualtricsEOS') {
                     psiTurk.recordTrialData({'phase':'SURVEY', 'status':'back_from_qualtrics'});
                     psiTurk.recordUnstructuredData('qualtrics_session_id', q_message_array[2]);
