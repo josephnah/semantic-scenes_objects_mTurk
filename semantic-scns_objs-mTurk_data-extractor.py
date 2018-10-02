@@ -9,8 +9,9 @@ import pandas as pd
 
 # Specify location of data.
 # Data are stored as string in "data_column_name" in table, "table_name", in SQL.DB located in "db_url"
-db_url              = "sqlite:///participants.db"
-table_name          = "turkdemo"
+db_url = "mysql+pymysql://cnah:baejarin$1216neMoagung@localhost:33306/acl_semantics_scns_objs_mTurk"
+# db_url              = "sqlite:///participants.db"
+table_name          = "exp_data"
 data_column_name    = "datastring"
 
 # Not sure if these are needed.
@@ -31,7 +32,7 @@ rows = s.execute()
 
 data = []
 #status codes of subjects who completed experiment
-statuses = [4];
+statuses = [4,5,6];
 # if you have workers you wish to exclude, add them here
 exclude = []
 for row in rows:
@@ -48,8 +49,6 @@ data = [json.loads(part)['data'] for part in data]
 
 #insert uniqueid field into trialdata in case it wasn't added
 #in experiment:
-# print(data[0][0])
-print(data)
 for part in data:
     for record in part:
         record['trialdata']['uniqueid'] = record['uniqueid']
@@ -58,20 +57,15 @@ for part in data:
 
 # flatten nested list so we just have a list of the trialdata recorded
 # each time psiturk.recordTrialData(trialdata) was called.
-data = [record['trialdata'] for part in data for record in part]
+trial_data = [record['trialdata'] for part in data for record in part]
 
-# print(data)
+print(trial_data[1337])
+# print(trial_data[0]["phase"])
+for part in range(len(trial_data)):
+    if trial_data[part]["phase"] == "postquestionnaire":
+        print(trial_data[part]);
 # Put all subjects' trial data into a dataframe object from the
 # 'pandas' python library: one option among many for analysis
 data_frame = pd.DataFrame(data)
 
 data_frame.to_clipboard(excel=True, sep='\t')
-
-# print(data_frame)
-
-# print(data)
-# print(data[9])
-
-test_data   = '{"employee_name": "James", "email": "james@gmail.com", "job_profile": ["Team Lead", "Sr. Developer"]}'
-Parsed_data  = json.loads(test_data)
-# print Parsed_data['job_profile'][]
