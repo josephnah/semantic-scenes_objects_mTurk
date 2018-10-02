@@ -51,7 +51,7 @@ var fixation_width = 5;
 psiTurk.preloadPages(pages);
 
 var instructionPages = [ // add as a list as many pages as you like
-	"instructions/instruct-1.html",
+    "instructions/instruct-1.html",
     "instructions/instruct-2.html",
     "instructions/instruct-3.html",
     "instructions/instruct-4.html",
@@ -197,7 +197,7 @@ var practice = function() {
 	var finishprac = function(e){
 			if (e.keyCode === 32) {
 				document.removeEventListener("keydown",finishprac,false);
-				currentview = new survey();
+				currentview = new main_task();
 			}
 	};
 
@@ -416,14 +416,13 @@ var main_task = function() {
     var finish = function() {
 		this.s = Snap('#svgMain');
         this.s.image("/static/images/after_exp.png", center[0] - 1447/2, center[1] - 872/2);
-		probeinst1 = s.text(540,400,'You completed the experiment. Thank you! Press spacebar to continue.').attr({'fill' : 'white',  'stroke': 'white', 'stroke-width': 0.6});
-		document.addEventListener("keydown",to_questionnaire, false);
+		document.addEventListener("keydown",to_survey, false);
 	};
 
-    var to_questionnaire = function(e){
+    var to_survey = function(e){
         if (e.keyCode == 32) {
-            document.removeEventListener("keydown",to_questionnaire,false);
-            currentview = new Questionnaire();
+            document.removeEventListener("keydown",to_survey,false);
+            currentview = new survey();
         }
     };
 
@@ -607,11 +606,11 @@ var main_task = function() {
 
 var survey = function() {
     document.body.style.cursor = "default";
+
 	psiTurk.showPage('survey.html');
-    	// load your iframe with a url specific to your participant
-    $('#iframe').attr('src','https://columbiangwu.co1.qualtrics.com/jfe/form/SV_3EHflgEl2JdxXaR');
+    // load your iframe with a url specific to your participant
+    $('#iframe').attr('src','https://columbiangwu.co1.qualtrics.com/jfe/form/SV_4UdLvABaB7rOwQt?UID=' + uniqueId);
     // add the all-important message event listener
-    // console.log($('#iframe'));
     window.addEventListener('message', function(event){
 
         // normally there would be a security check here on event.origin (see the MDN link above), but meh.
@@ -703,6 +702,6 @@ var currentview;
 $(window).load( function(){
     psiTurk.doInstructions(
     	instructionPages, // a list of pages you want to display in sequence
-    	function() { currentview = new survey(); } // what you want to do when you are done with instructions
+    	function() { currentview = new practice(); } // what you want to do when you are done with instructions
     );
 });
