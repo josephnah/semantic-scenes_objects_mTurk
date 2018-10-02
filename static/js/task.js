@@ -615,7 +615,7 @@ var survey = function() {
 
 	psiTurk.showPage('survey.html');
     // load your iframe with a url specific to your participant
-    $('#iframe').attr('src','https://columbiangwu.co1.qualtrics.com/jfe/form/SV_4UdLvABaB7rOwQt?UID=' + uniqueId);
+    $('#iframe').attr('src','https://columbiangwu.co1.qualtrics.com/jfe/form/SV_4UdLvABaB7rOwQt?uniqueId=' + uniqueId);
     // add the all-important message event listener
     window.addEventListener('message', function(event){
 
