@@ -280,6 +280,8 @@ var practice = function() {
             document.addEventListener("keypress", get_response, false);
             // console.log("hi");
             prac_trial_count ++;
+            console.log("end of trial:" + prac_trial_count);
+
         }
 
     };
@@ -541,6 +543,24 @@ var main_task = function() {
             }
             // console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT, ", trial: ", trial_count);
 
+            psiTurk.recordTrialData({"phase": "EXPERIMENT",
+                "exp_mode": 1,
+                "block": block,
+                "trial": trial_count,
+                "match": match,
+                "target_ori": target_ori,
+                "condition": parseFloat([exp_trials[trial_count][index_condition]]),
+                "main_obj": parseFloat([exp_trials[trial_count][index_main_object]]),
+                "other_obj": parseFloat([exp_trials[trial_count][index_other_object]]),
+                "main_obj_loc": main_object_loc,
+                "scene_type": parseFloat([exp_trials[trial_count][index_scene_category]]),
+                "scene_exemplar": parseFloat([exp_trials[trial_count][index_scene_exemplar]]),
+                "accuracy": acc,
+                "RT": RT,
+                "pressedKey": keyPressed,
+                "resp": resp
+            });
+
             var ITI = function(){
                 this.s = Snap("#svgMain");
                 s.clear();
@@ -558,23 +578,7 @@ var main_task = function() {
             ITI();
         };
 
-        psiTurk.recordTrialData({"phase": "EXPERIMENT",
-            "exp_mode": 1,
-            "block": block,
-            "trial": trial_count,
-            "match": match,
-            "target_ori": target_ori,
-            "condition": parseFloat([exp_trials[trial_count][index_condition]]),
-            "main_obj": parseFloat([exp_trials[trial_count][index_main_object]]),
-            "other_obj": parseFloat([exp_trials[trial_count][index_other_object]]),
-            "main_obj_loc": main_object_loc,
-            "scene_type": parseFloat([exp_trials[trial_count][index_scene_category]]),
-            "scene_exemplar": parseFloat([exp_trials[trial_count][index_scene_exemplar]]),
-            "accuracy": acc,
-            "RT": RT,
-            "pressedKey": keyPressed,
-            "resp": resp
-        });
+
     };
 
     // Adds rest inbetween blocks
