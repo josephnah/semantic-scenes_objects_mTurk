@@ -467,7 +467,6 @@ var main_task = function() {
         var orient_match    = Math.random();
         var match_determine = Math.random();
 
-        gabor_onset = new Date().getTime();
         // Determine the orientation of target gabor
         if (orient_match < .5) {
             target_ori = -45;
@@ -511,13 +510,14 @@ var main_task = function() {
     // need to figure out how to exit this when no keypress
     var show_SOA = function(){
         this.s = Snap("#svgMain");
+        gabor_offset = new Date().getTime(); // Start recording for RT
+
         show_scene("static/images/scenes/" + [exp_trials[trial_count][index_scene_category]] +"/" +[exp_trials[trial_count][index_scene_exemplar]]+ img_file_ext);
         show_objects();
         show_fixation();
 
         document.addEventListener("keypress", get_response, false);
 
-        trial_count ++;
         // console.log("end of trial:" + prac_trial_count);
         // clearTimeout(show_gabors);
 	};
@@ -526,7 +526,7 @@ var main_task = function() {
     var get_response = function (e) {
         if (e.charCode === 102 || e.charCode === 106) { // 102 = f 106 = j
 
-            var RT = new Date().getTime() - gabor_onset; // Get RT
+            var RT = new Date().getTime() - gabor_offset; // Get RT
             document.removeEventListener("keypress", get_response, false);
             resp = 1;
 
@@ -541,7 +541,8 @@ var main_task = function() {
                 acc = 0;
                 keyPressed = e.charCode;
             }
-            // console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT, ", trial: ", trial_count);
+            // console.log("keyPressed: " + e.charCode, ", resp:" + resp + ", Acc: " + acc + ", RT: " + RT);
+            // console.log("block: " + block, ", trial:" + trial_count, ", condition: " + parseFloat([exp_trials[trial_count][index_condition]]));
 
             psiTurk.recordTrialData({"phase": "EXPERIMENT",
                 "exp_mode": 1,
@@ -575,6 +576,7 @@ var main_task = function() {
                 handle_fin = setTimeout(function(){
                     rest()}, 500);
             };
+            trial_count ++;
             ITI();
         };
 
