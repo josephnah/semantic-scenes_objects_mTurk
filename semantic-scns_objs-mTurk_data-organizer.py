@@ -4,6 +4,7 @@
 # customized for semantic-scn-obj-mTurk
 import glob, os, time, getpass
 import pandas as pd
+import numpy as np
 
 # Data Thresholding
 exp_name    = "scns_obs-mTurk"
@@ -16,6 +17,7 @@ acc_thresh  = 80
 data_analysis   = 1
 survey_analysis = 1
 demogr_analysis = 1
+data_write      = 0
 
 if data_analysis == 1:
     # If on windows, change directory
@@ -25,19 +27,28 @@ if data_analysis == 1:
     # change directory based on computer
     userName    = getpass.getuser()
     data_dir    = "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/data" + "/*.csv"
-
+    survey_dir  = "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/survey" + "/*.csv"
+    final_data  = "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/" + "semantic_scns-objs_mTurk.xlsx"
     # Extract all data files into single np array
     data_files      = glob.glob(data_dir)
+    survey_files    = glob.glob(survey_dir)
     participants    = len(data_files)
 
-    # Load all data files into single panda data frame
+    # Load all data and survey files into single panda data frame
     raw_data = []
+    survey_data = []
     for file in range(participants):
-        data = pd.read_csv(data_files[file], index_col = "uniqueid", header = 0)
+        data    = pd.read_csv(data_files[file], header = 0)
+        survey  = pd.read_csv(survey_files[file], header = 0)
         raw_data.append(data)
+        survey_data.append(survey)
 
     exp_dataframe = pd.concat(raw_data)
-    # data_frame_raw.to_clipboard(excel=True, sep='\t')
+    sur_dataframe = pd.concat(survey_data)
+
+    # Combine demographics and data from experiment
+    exp_dataframe = pd.merge(exp_dataframe, sur_dataframe, on= "uniqueid")
+
 
     # Put all subjects' trial data into pandas dataframe
     # 320 trials per participant
@@ -64,7 +75,7 @@ if data_analysis == 1:
     avg_target_ori      = exp_dataframe.groupby(["uniqueid"])["target_ori"].mean()
     avg_main_obj_loc    = exp_dataframe.groupby(["uniqueid"])["main_obj_loc"].mean()
 
-    sanity_checks = pd.concat([avg_match,avg_target_ori,avg_main_obj_loc], axis = 1)
+    sanity_checks       = pd.concat([avg_match,avg_target_ori,avg_main_obj_loc], axis = 1)
     # print(sanity_checks)
 
     # count trials
@@ -84,7 +95,7 @@ if data_analysis == 1:
 
         # concat trial count + % into one
         excluded_data_count = pd.concat(excluded_data_count, axis=1)
-        excluded_data_count.columns = ["dropped_Trials", "drop_Rate"]
+        excluded_data_count.columns = ["dropped_trials", "drop_rate"]
 
     # COLUMNS
     col_semRel_scenes           = ["SR_office", "SR_living", "SR_bath", "SR_kitchen", "SR_bed", "NR_office", "NR_living",
@@ -94,37 +105,44 @@ if data_analysis == 1:
                                    "SR_bath_tp", "SR_kitchen_mitt", "SR_kitchen_grater", "SR_bed_hanger", "SR_bed_clock",
                                    "NR_office_mouse", "NR_office_calc", "NR_living_remote", "NR_living_game", "NR_bath_paste",
                                    "NR_bath_tp", "NR_kitchen_mitt", "NR_kitchen_grater", "NR_bed_hanger", "NR_bed_clock"]
-    # ACCURACY
+
+    # Keep only the good participants
     acc_overall                 = exp_dataframe.groupby(["uniqueid"])["accuracy"].mean()*100
+    good_participants           = acc_overall.loc[acc_overall >= acc_thresh].index.get_level_values(0).tolist()
+    exp_dataframe               = exp_dataframe[exp_dataframe["uniqueid"].isin(good_participants)]
+
+    # ACCURACY
     acc_semRel                  = exp_dataframe.groupby(["uniqueid","condition"])["accuracy"].mean().unstack(["condition"])*100
     acc_semRel_scenes           = exp_dataframe.groupby(["uniqueid","condition","scene_type"])["accuracy"].mean().unstack(["condition","scene_type"])*100
     acc_semRel_scenes_mainObj   = exp_dataframe.groupby(["uniqueid","condition","scene_type","main_obj"])["accuracy"].mean().unstack(["condition","scene_type","main_obj"])*100
 
-    acc_semRel_scenes_mainObj.columns = col_semRel_scenes_mainObj;
+    # acc_semRel_scenes_mainObj.columns = col_semRel_scenes_mainObj;
+
     # RT
     corr_exp_dataframe          = exp_dataframe[(exp_dataframe["accuracy"] == 1)]
 
     RT_overall                  = corr_exp_dataframe.groupby(["uniqueid"])["RT"].mean()
     RT_semRel                   = corr_exp_dataframe.groupby(["uniqueid","condition"])["RT"].mean().unstack(["condition"])
-    RT_semRel_scenes            = corr_exp_dataframe.groupby(["uniqueid","condition","scene_type"])["RT"].mean().unstack(["scene_type","condition"])
-    RT_semRel_scenes_exemplar   = corr_exp_dataframe.groupby(["uniqueid","condition","scene_type","scene_exemplar"])["RT"].mean().unstack(["condition","scene_type","scene_exemplar"])
+    RT_semRel_scenes            = corr_exp_dataframe.groupby(["uniqueid","scene_type","condition"])["RT"].mean().unstack(["condition","scene_type"])
+    RT_semRel_scenes_exemplar   = corr_exp_dataframe.groupby(["uniqueid","scene_type","scene_exemplar","condition"])["RT"].mean().unstack(["condition","scene_type","scene_exemplar"])
     RT_semRel_scenes_mainObj    = corr_exp_dataframe.groupby(["uniqueid","condition","scene_type","main_obj"])["RT"].mean().unstack(["condition","scene_type","main_obj"])
 
-    RT_semRel_scenes_mainObj.columns = col_semRel_scenes_mainObj;
-
+    # RT_semRel_scenes_mainObj.columns = col_semRel_scenes_mainObj;
     # concat all data into single data frame, update when necessary
-    all_data = pd.concat([excluded_data_count, acc_overall, acc_semRel_scenes_mainObj, RT_semRel_scenes_mainObj],axis = 1)
+    all_data = pd.concat([excluded_data_count, acc_overall, acc_semRel_scenes, RT_semRel_scenes],axis = 1)
 
-    # Exclude participants w/ bad accuracy
-    all_data = all_data[all_data.accuracy >= acc_thresh]
 
     # print(RT_semRel_scenes_mainObj)
-    all_data.to_clipboard(excel=True, sep='\t')
+    RT_semRel_scenes.to_clipboard(excel=True, sep='\t')
 
-# print(all_data)
-# Write data to excel file
-# writer = pd.ExcelWriter("semantic_scns-objs_mTurk.xlsx", engine="xlsxwriter")
-# sanity_checks.to_excel(writer, sheet_name="Sheet1")
-# RT_semRel_scenes_mainObj.to_excel(writer, sheet_name="Sheet2")
-# acc_semRel_scenes_mainObj.to_excel(writer, sheet_name="Sheet3")
-# writer.save()
+    # Write data to excel file
+    if data_write == 1:
+        writer = pd.ExcelWriter(final_data, engine="xlsxwriter")
+        sanity_checks.to_excel(writer, sheet_name="Sheet1")
+        RT_semRel_scenes_mainObj.to_excel(writer, sheet_name="Sheet2")
+        acc_semRel_scenes_mainObj.to_excel(writer, sheet_name="Sheet3")
+        sur_dataframe.to_excel(writer, sheet_name="Sheet4")
+
+        writer.save()
+
+# if survey_analysis == 1:
