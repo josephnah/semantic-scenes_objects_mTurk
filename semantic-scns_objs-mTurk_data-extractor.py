@@ -2,7 +2,7 @@
 # Extracts SQL database into csv files
 # Redundant, but allows access to data outside of GWU boundaries (if using MYSQL)
 # There might be a way to access MYSQL outside of GWU but idk how
-# Version 1.1.0
+# Version 1.1.1
 # customized for semantic-scn-obj-mTurk
 from sqlalchemy import create_engine, MetaData, Table
 import json, os, getpass, glob
@@ -71,7 +71,7 @@ for row in rows:
 
         # Define directories
         data_dir    =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/data/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] +"-" + row["assignmentid"] + "_data" + ".csv"
-        survey_dir  =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/survey/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] + "-" + row["assignmentid"] + "_survey" + ".csv"
+        demogr_dir  =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/demogr/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] + "-" + row["assignmentid"] + "_survey" + ".csv"
         event_dir   =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/event/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] + "-" + row["assignmentid"] + "_event" + ".csv"
 
         # parse each participant's datastring as json object
@@ -111,7 +111,7 @@ for row in rows:
 
         # save to data folder
         exp_dataframe.to_csv(data_dir)
-        quest_dataframe.to_csv(survey_dir)
+        quest_dataframe.to_csv(demogr_dir)
         event_dataframe.to_csv(event_dir)
 
 if concat_data == 1:
