@@ -74,7 +74,6 @@ if data_analysis == 1:
     # Combine demographics and data from experiment
     exp_dataframe = pd.merge(exp_dataframe, sur_dataframe, on= "uniqueid")
 
-
     # Put all subjects' trial data into pandas dataframe
     # 320 trials per participant
     # 160 for full CB
@@ -128,9 +127,10 @@ if data_analysis == 1:
     exp_dataframe               = exp_dataframe[exp_dataframe["uniqueid"].isin(good_participants)]
     dropped_trials              = excluded_data_count[excluded_data_count.index.isin(good_participants)]
 
-    # Remap hand to numbers
+    # Remap hand to numbers oh and get date
     exp_dataframe["hand"]       = exp_dataframe["hand"].map({"Right": 1, "Left": 2})
     demogr_dataframe            = exp_dataframe.groupby(["uniqueid"])["age", "hand"].mean()
+    date                        = exp_dataframe.groupby(["uniqueid"])["date"].unique()
 
     # ACCURACY
     acc_overall                 = exp_dataframe.groupby(["uniqueid"])["accuracy"].mean() * 100
@@ -228,20 +228,20 @@ if survey_analysis == 1:
 
 ## Let's wrap up now
 # concat all data into single data frame, update when necessary
-all_data    = pd.concat([demogr_dataframe, RT_semRel, acc_semRel_scenes, RT_semRel_scenes, survey_semDiff_dataframe], axis=1)
-
+all_data    = pd.concat([demogr_dataframe, date, acc_overall, acc_semRel_scenes, RT_semRel_scenes, survey_semDiff_dataframe], axis=1)
+all_data    = all_data.sort_values("date")
 
 ## Get data for graphing
-graph_acc   = cm_standard_error(acc_semRel_scenes_mainObj)
-graph_RT    = cm_standard_error(RT_semRel_scenes_mainObj)
+graph_acc   = cm_standard_error(acc_semRel_scenes)
+graph_RT    = cm_standard_error(RT_semRel_scenes)
 graph_surv  = survey_semDiff_dataframe.mean()
-print(survey_semDiff_dataframe)
+
 graph_data  = pd.concat([graph_acc, graph_RT], axis = 1)
 
 # Prepare data for regression here
 
 # copy df to clipboard
-survey_semDiff_dataframe.to_clipboard(excel=True, sep='\t')
-
+all_data.to_clipboard(excel=True, sep='\t')
+# print(all_data)
 time_elapsed = time.time() - x
 print("Success! Time Elapsed: " + str(round(time_elapsed,5)*1000) + " ms")
