@@ -70,9 +70,9 @@ for row in rows:
         uniqueid.append(row["uniqueid"]);
 
         # Define directories
-        data_dir    =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/data/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] +"-" + row["assignmentid"] + "_data" + ".csv"
-        demogr_dir  =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/demogr/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] + "-" + row["assignmentid"] + "_survey" + ".csv"
-        event_dir   =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/event/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] + "-" + row["assignmentid"] + "_event" + ".csv"
+        data_dir    =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/data/exp04-mTurk/data/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] +"-" + row["assignmentid"] + "_data" + ".csv"
+        demogr_dir  =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/data/exp04-mTurk/demogr/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] + "-" + row["assignmentid"] + "_survey" + ".csv"
+        event_dir   =  "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/data/exp04-mTurk/event/"  + exp_name + "_" + row["endhit"].strftime('%Y-%m-%d_%H-%M-%S') + "_" +row["workerid"] + "-" + row["assignmentid"] + "_event" + ".csv"
 
         # parse each participant's datastring as json object
         # and take the 'data' sub-object
@@ -85,7 +85,7 @@ for row in rows:
             for record in part:
                 record['trialdata']['uniqueid'] = record['uniqueid']
                 record['trialdata']['dateTime'] = record['dateTime']
-
+                record['trialdata']['date']     = row["endhit"].strftime('%Y-%m-%d_%H-%M-%S')
         # eventdata
         for part in eventdata:
             for record in part:
@@ -110,9 +110,12 @@ for row in rows:
         quest_dataframe = pd.DataFrame(questiondata)
 
         # save to data folder
-        exp_dataframe.to_csv(data_dir)
-        quest_dataframe.to_csv(demogr_dir)
-        event_dataframe.to_csv(event_dir)
+        if os.path.isfile(data_dir):
+            print('data already exists bro')
+        else:
+            exp_dataframe.to_csv(data_dir)
+            quest_dataframe.to_csv(demogr_dir)
+            event_dataframe.to_csv(event_dir)
 
 if concat_data == 1:
     all_data_dir    = "/Users/" + userName + "/Dropbox/GWU/01_Research/08_semanticScenes/mTurk/data" + "/*.csv"
@@ -126,5 +129,5 @@ if concat_data == 1:
         raw_data.append(data)
 
     exp_dataframe = pd.concat(raw_data)
-    exp_dataframe.to_csv(data_dir)
+    # exp_dataframe.to_csv(data_dir,"a")
     # exp_dataframe.to_clipboard(excel=True, sep='\t')
