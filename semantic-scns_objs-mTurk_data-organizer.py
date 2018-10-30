@@ -128,8 +128,12 @@ if data_analysis == 1:
     dropped_trials              = excluded_data_count[excluded_data_count.index.isin(good_participants)]
 
     # Remap hand to numbers oh and get date
-    exp_dataframe["hand"]       = exp_dataframe["hand"].map({"Right": 1, "Left": 2})
-    demogr_dataframe            = exp_dataframe.groupby(["uniqueid"])["age", "hand"].mean()
+    exp_dataframe["hand"]       = exp_dataframe["hand"].map({"Right": 1, "Left": 2, "Both": 3})
+    exp_dataframe["gender"]     = exp_dataframe["gender"].map({"Male": 1, "Female": 2})
+    demogr_dataframe            = exp_dataframe.groupby(["uniqueid"])["age", "hand", "gender"].mean()
+
+    # Add age to participant who wasn't able to input
+    demogr_dataframe.loc[demogr_dataframe.index == "A228YSXU6H27QT:3R2PKQ87NX65SKXDP9BDQ98FR6YMI9", ["age", "gender"]] = 34, 1
     date                        = exp_dataframe.groupby(["uniqueid"])["date"].unique()
 
     # ACCURACY
@@ -149,8 +153,6 @@ if data_analysis == 1:
     RT_semRel_scenes_exemplar   = corr_exp_dataframe.groupby(["uniqueid","scene_type","scene_exemplar","condition"])["RT"].mean().unstack(["condition","scene_type","scene_exemplar"])
     RT_semRel_scenes_mainObj    = corr_exp_dataframe.groupby(["uniqueid","scene_type","main_obj", "condition"])["RT"].mean().unstack(["scene_type","main_obj", "condition"])
 
-    # concat all data into single data frame, update when necessary
-    all_data = pd.concat([RT_semRel_scenes_mainObj],axis = 1)
 
     # PLOT GRAPHS
     if plot_graphs == 1:
@@ -205,40 +207,56 @@ if survey_analysis == 1:
     # Scene 3: Bathroom
     # Scene 4: Kitchen
     # Scene 5: Bedroom
-    survey_dataframe["scene1_sem-mag"] = (survey_dataframe["Q1-10"] + survey_dataframe["Q1-11"])/2 - (survey_dataframe["Q1-20"] + survey_dataframe["Q1-21"] + survey_dataframe["Q1-30"] + survey_dataframe["Q1-31"] + survey_dataframe["Q1-40"] + survey_dataframe["Q1-41"] + survey_dataframe["Q1-50"] + survey_dataframe["Q1-51"])/8
-    survey_dataframe["scene2_sem-mag"] = (survey_dataframe["Q2-20"] + survey_dataframe["Q2-21"])/2 - (survey_dataframe["Q2-10"] + survey_dataframe["Q2-11"] + survey_dataframe["Q2-30"] + survey_dataframe["Q2-31"] + survey_dataframe["Q2-40"] + survey_dataframe["Q2-41"] + survey_dataframe["Q2-50"] + survey_dataframe["Q2-51"])/8
-    survey_dataframe["scene3_sem-mag"] = (survey_dataframe["Q3-30"] + survey_dataframe["Q3-31"])/2 - (survey_dataframe["Q3-10"] + survey_dataframe["Q3-11"] + survey_dataframe["Q3-20"] + survey_dataframe["Q3-21"] + survey_dataframe["Q3-30"] + survey_dataframe["Q3-31"] + survey_dataframe["Q3-40"] + survey_dataframe["Q3-41"])/8
-    survey_dataframe["scene4_sem-mag"] = (survey_dataframe["Q4-40"] + survey_dataframe["Q4-41"])/2 - (survey_dataframe["Q4-10"] + survey_dataframe["Q4-11"] + survey_dataframe["Q4-20"] + survey_dataframe["Q4-21"] + survey_dataframe["Q4-30"] + survey_dataframe["Q4-31"] + survey_dataframe["Q4-50"] + survey_dataframe["Q4-51"])/8
-    survey_dataframe["scene5_sem-mag"] = (survey_dataframe["Q5-50"] + survey_dataframe["Q5-51"])/2 - (survey_dataframe["Q5-10"] + survey_dataframe["Q5-11"] + survey_dataframe["Q5-20"] + survey_dataframe["Q5-21"] + survey_dataframe["Q5-30"] + survey_dataframe["Q5-31"] + survey_dataframe["Q5-40"] + survey_dataframe["Q5-41"])/8
+    sem_rat_scenes = pd.DataFrame()
+    sem_rat_scenes["scene1_sem-mag"] = (survey_dataframe["Q1-10"] + survey_dataframe["Q1-11"])/2 - (survey_dataframe["Q1-20"] + survey_dataframe["Q1-21"] + survey_dataframe["Q1-30"] + survey_dataframe["Q1-31"] + survey_dataframe["Q1-40"] + survey_dataframe["Q1-41"] + survey_dataframe["Q1-50"] + survey_dataframe["Q1-51"])/8
+    sem_rat_scenes["scene2_sem-mag"] = (survey_dataframe["Q2-20"] + survey_dataframe["Q2-21"])/2 - (survey_dataframe["Q2-10"] + survey_dataframe["Q2-11"] + survey_dataframe["Q2-30"] + survey_dataframe["Q2-31"] + survey_dataframe["Q2-40"] + survey_dataframe["Q2-41"] + survey_dataframe["Q2-50"] + survey_dataframe["Q2-51"])/8
+    sem_rat_scenes["scene3_sem-mag"] = (survey_dataframe["Q3-30"] + survey_dataframe["Q3-31"])/2 - (survey_dataframe["Q3-10"] + survey_dataframe["Q3-11"] + survey_dataframe["Q3-20"] + survey_dataframe["Q3-21"] + survey_dataframe["Q3-30"] + survey_dataframe["Q3-31"] + survey_dataframe["Q3-40"] + survey_dataframe["Q3-41"])/8
+    sem_rat_scenes["scene4_sem-mag"] = (survey_dataframe["Q4-40"] + survey_dataframe["Q4-41"])/2 - (survey_dataframe["Q4-10"] + survey_dataframe["Q4-11"] + survey_dataframe["Q4-20"] + survey_dataframe["Q4-21"] + survey_dataframe["Q4-30"] + survey_dataframe["Q4-31"] + survey_dataframe["Q4-50"] + survey_dataframe["Q4-51"])/8
+    sem_rat_scenes["scene5_sem-mag"] = (survey_dataframe["Q5-50"] + survey_dataframe["Q5-51"])/2 - (survey_dataframe["Q5-10"] + survey_dataframe["Q5-11"] + survey_dataframe["Q5-20"] + survey_dataframe["Q5-21"] + survey_dataframe["Q5-30"] + survey_dataframe["Q5-31"] + survey_dataframe["Q5-40"] + survey_dataframe["Q5-41"])/8
 
     # Differences for each object
-    survey_dataframe["10_sem-mag"] = survey_dataframe["Q1-10"] - (survey_dataframe["Q1-20"] + survey_dataframe["Q1-21"] + survey_dataframe["Q1-30"] + survey_dataframe["Q1-31"] + survey_dataframe["Q1-40"] + survey_dataframe["Q1-41"] + survey_dataframe["Q1-50"] + survey_dataframe["Q1-51"])/8
-    survey_dataframe["11_sem-mag"] = survey_dataframe["Q1-11"] - (survey_dataframe["Q1-20"] + survey_dataframe["Q1-21"] + survey_dataframe["Q1-30"] + survey_dataframe["Q1-31"] + survey_dataframe["Q1-40"] + survey_dataframe["Q1-41"] + survey_dataframe["Q1-50"] + survey_dataframe["Q1-51"])/8
-    survey_dataframe["20_sem-mag"] = survey_dataframe["Q2-20"] - (survey_dataframe["Q2-10"] + survey_dataframe["Q2-11"] + survey_dataframe["Q2-30"] + survey_dataframe["Q2-31"] + survey_dataframe["Q2-40"] + survey_dataframe["Q2-41"] + survey_dataframe["Q2-50"] + survey_dataframe["Q2-51"])/8
-    survey_dataframe["21_sem-mag"] = survey_dataframe["Q2-21"] - (survey_dataframe["Q2-10"] + survey_dataframe["Q2-11"] + survey_dataframe["Q2-30"] + survey_dataframe["Q2-31"] + survey_dataframe["Q2-40"] + survey_dataframe["Q2-41"] + survey_dataframe["Q2-50"] + survey_dataframe["Q2-51"])/8
-    survey_dataframe["30_sem-mag"] = survey_dataframe["Q3-30"] - (survey_dataframe["Q3-10"] + survey_dataframe["Q3-11"] + survey_dataframe["Q3-20"] + survey_dataframe["Q3-21"] + survey_dataframe["Q3-30"] + survey_dataframe["Q3-31"] + survey_dataframe["Q3-40"] + survey_dataframe["Q3-41"])/8
-    survey_dataframe["31_sem-mag"] = survey_dataframe["Q3-31"] - (survey_dataframe["Q3-10"] + survey_dataframe["Q3-11"] + survey_dataframe["Q3-20"] + survey_dataframe["Q3-21"] + survey_dataframe["Q3-30"] + survey_dataframe["Q3-31"] + survey_dataframe["Q3-40"] + survey_dataframe["Q3-41"])/8
-    survey_dataframe["40_sem-mag"] = survey_dataframe["Q4-40"] - (survey_dataframe["Q4-10"] + survey_dataframe["Q4-11"] + survey_dataframe["Q4-20"] + survey_dataframe["Q4-21"] + survey_dataframe["Q4-30"] + survey_dataframe["Q4-31"] + survey_dataframe["Q4-50"] + survey_dataframe["Q4-51"])/8
-    survey_dataframe["41_sem-mag"] = survey_dataframe["Q4-41"] - (survey_dataframe["Q4-10"] + survey_dataframe["Q4-11"] + survey_dataframe["Q4-20"] + survey_dataframe["Q4-21"] + survey_dataframe["Q4-30"] + survey_dataframe["Q4-31"] + survey_dataframe["Q4-50"] + survey_dataframe["Q4-51"])/8
-    survey_dataframe["50_sem-mag"] = survey_dataframe["Q5-50"] - (survey_dataframe["Q5-10"] + survey_dataframe["Q5-11"] + survey_dataframe["Q5-20"] + survey_dataframe["Q5-21"] + survey_dataframe["Q5-30"] + survey_dataframe["Q5-31"] + survey_dataframe["Q5-40"] + survey_dataframe["Q5-41"])/8
-    survey_dataframe["51_sem-mag"] = survey_dataframe["Q5-51"] - (survey_dataframe["Q5-10"] + survey_dataframe["Q5-11"] + survey_dataframe["Q5-20"] + survey_dataframe["Q5-21"] + survey_dataframe["Q5-30"] + survey_dataframe["Q5-31"] + survey_dataframe["Q5-40"] + survey_dataframe["Q5-41"])/8
+    sem_rat_scenes_mainObj = pd.DataFrame()
+    sem_rat_scenes_mainObj["10_sem-mag"] = survey_dataframe["Q1-10"] - (survey_dataframe["Q1-20"] + survey_dataframe["Q1-21"] + survey_dataframe["Q1-30"] + survey_dataframe["Q1-31"] + survey_dataframe["Q1-40"] + survey_dataframe["Q1-41"] + survey_dataframe["Q1-50"] + survey_dataframe["Q1-51"])/8
+    sem_rat_scenes_mainObj["11_sem-mag"] = survey_dataframe["Q1-11"] - (survey_dataframe["Q1-20"] + survey_dataframe["Q1-21"] + survey_dataframe["Q1-30"] + survey_dataframe["Q1-31"] + survey_dataframe["Q1-40"] + survey_dataframe["Q1-41"] + survey_dataframe["Q1-50"] + survey_dataframe["Q1-51"])/8
+    sem_rat_scenes_mainObj["20_sem-mag"] = survey_dataframe["Q2-20"] - (survey_dataframe["Q2-10"] + survey_dataframe["Q2-11"] + survey_dataframe["Q2-30"] + survey_dataframe["Q2-31"] + survey_dataframe["Q2-40"] + survey_dataframe["Q2-41"] + survey_dataframe["Q2-50"] + survey_dataframe["Q2-51"])/8
+    sem_rat_scenes_mainObj["21_sem-mag"] = survey_dataframe["Q2-21"] - (survey_dataframe["Q2-10"] + survey_dataframe["Q2-11"] + survey_dataframe["Q2-30"] + survey_dataframe["Q2-31"] + survey_dataframe["Q2-40"] + survey_dataframe["Q2-41"] + survey_dataframe["Q2-50"] + survey_dataframe["Q2-51"])/8
+    sem_rat_scenes_mainObj["30_sem-mag"] = survey_dataframe["Q3-30"] - (survey_dataframe["Q3-10"] + survey_dataframe["Q3-11"] + survey_dataframe["Q3-20"] + survey_dataframe["Q3-21"] + survey_dataframe["Q3-30"] + survey_dataframe["Q3-31"] + survey_dataframe["Q3-40"] + survey_dataframe["Q3-41"])/8
+    sem_rat_scenes_mainObj["31_sem-mag"] = survey_dataframe["Q3-31"] - (survey_dataframe["Q3-10"] + survey_dataframe["Q3-11"] + survey_dataframe["Q3-20"] + survey_dataframe["Q3-21"] + survey_dataframe["Q3-30"] + survey_dataframe["Q3-31"] + survey_dataframe["Q3-40"] + survey_dataframe["Q3-41"])/8
+    sem_rat_scenes_mainObj["40_sem-mag"] = survey_dataframe["Q4-40"] - (survey_dataframe["Q4-10"] + survey_dataframe["Q4-11"] + survey_dataframe["Q4-20"] + survey_dataframe["Q4-21"] + survey_dataframe["Q4-30"] + survey_dataframe["Q4-31"] + survey_dataframe["Q4-50"] + survey_dataframe["Q4-51"])/8
+    sem_rat_scenes_mainObj["41_sem-mag"] = survey_dataframe["Q4-41"] - (survey_dataframe["Q4-10"] + survey_dataframe["Q4-11"] + survey_dataframe["Q4-20"] + survey_dataframe["Q4-21"] + survey_dataframe["Q4-30"] + survey_dataframe["Q4-31"] + survey_dataframe["Q4-50"] + survey_dataframe["Q4-51"])/8
+    sem_rat_scenes_mainObj["50_sem-mag"] = survey_dataframe["Q5-50"] - (survey_dataframe["Q5-10"] + survey_dataframe["Q5-11"] + survey_dataframe["Q5-20"] + survey_dataframe["Q5-21"] + survey_dataframe["Q5-30"] + survey_dataframe["Q5-31"] + survey_dataframe["Q5-40"] + survey_dataframe["Q5-41"])/8
+    sem_rat_scenes_mainObj["51_sem-mag"] = survey_dataframe["Q5-51"] - (survey_dataframe["Q5-10"] + survey_dataframe["Q5-11"] + survey_dataframe["Q5-20"] + survey_dataframe["Q5-21"] + survey_dataframe["Q5-30"] + survey_dataframe["Q5-31"] + survey_dataframe["Q5-40"] + survey_dataframe["Q5-41"])/8
 
     # Save Semantic difference score as separate dataframe
     survey_semDiff_dataframe = survey_dataframe.iloc[:,95:]
 
 ## Let's wrap up now
 # concat all data into single data frame, update when necessary
-all_data    = pd.concat([demogr_dataframe, date, acc_overall, acc_semRel_scenes, RT_semRel_scenes, survey_semDiff_dataframe], axis=1)
-all_data    = all_data.sort_values("date")
+all_data    = pd.concat([demogr_dataframe, date, acc_overall, acc_semRel_scenes_mainObj, RT_semRel_scenes_mainObj], axis=1).sort_values("date")
+sem_rating  = pd.concat([date, sem_rat_scenes, sem_rat_scenes_mainObj], axis=1).sort_values("date")
+
+# Calculate Semantic Facilitation
+sem_fac_dataframe   = pd.DataFrame()
+inUse_dataframe     = pd.concat([RT_semRel_scenes_mainObj, date], axis = 1).sort_values("date")
+
+# calculate BSB for each scene (for regression)
+sem_fac_dataframe_columns = ["scene1-BSB","scene2-BSB","scene3-BSB","scene4-BSB","scene5-BSB"]
+sem_fac_dataframe_columns2 = ["scene1-10-BSB","scene1-11-BSB","scene2-20-BSB","scene2-21-BSB","scene3-30-BSB","scene3-31-BSB","scene4-40-BSB","scene4-41-BSB","scene5-50-BSB","scene5-51-BSB"]
+
+length = len(sem_fac_dataframe_columns2)
+
+for condition in range(length):
+    print(sem_fac_dataframe_columns2[condition])
+    sem_fac_dataframe[sem_fac_dataframe_columns2[condition]] = inUse_dataframe.ix[:,(condition*2)+1] - inUse_dataframe.ix[:,condition*2]
+
+sem_fac_dataframe = pd.concat([date, sem_rat_scenes_mainObj, sem_fac_dataframe], axis = 1).sort_values("date")
 
 ## Get data for graphing
-graph_acc   = cm_standard_error(acc_semRel_scenes)
-graph_RT    = cm_standard_error(RT_semRel_scenes)
+graph_acc   = cm_standard_error(acc_semRel_scenes_mainObj)
+graph_RT    = cm_standard_error(RT_semRel_scenes_mainObj)
 graph_surv  = survey_semDiff_dataframe.mean()
 
 graph_data  = pd.concat([graph_acc, graph_RT], axis = 1)
-
-# Prepare data for regression here
 
 # copy df to clipboard
 all_data.to_clipboard(excel=True, sep='\t')
